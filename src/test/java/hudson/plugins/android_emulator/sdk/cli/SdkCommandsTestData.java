@@ -1,7 +1,7 @@
 package hudson.plugins.android_emulator.sdk.cli;
 
 public interface SdkCommandsTestData {
-    final String LIST_TARGETS_LEGACY_OUTPUT = "Available Android targets:\n" + 
+    String LIST_TARGETS_LEGACY_OUTPUT = "Available Android targets:\n" +
             "----------\n" + 
             "id: 1 or \"android-23\"\n" + 
             "     Name: Android 6.0\n" + 
@@ -18,7 +18,7 @@ public interface SdkCommandsTestData {
             "     Revision: 2\n" + 
             "     Skins: HVGA, QVGA, WQVGA400, WQVGA432, WSVGA, WVGA800 (default), WVGA854, WXGA720, WXGA800, WXGA800-7in\n" + 
             " Tag/ABIs : default/x86_64";
-    final String LIST_SDK_COMPONENTS_SDKMANAGER = 
+    String LIST_SDK_COMPONENTS_SDKMANAGER =
             "Info: Parsing /opt/android-sdk/add-ons/addon-google_apis-google-23/package.xml\n" + 
             "Info: Parsing /opt/android-sdk/add-ons/addon-google_apis-google-24/package.xml\n" + 
             "Info: Parsing /opt/android-sdk/build-tools/25.0.0/package.xml\n" + 

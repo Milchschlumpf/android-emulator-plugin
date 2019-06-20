@@ -8,8 +8,6 @@ import java.util.List;
 import org.junit.Test;
 
 import hudson.plugins.android_emulator.sdk.Tool;
-import hudson.plugins.android_emulator.sdk.cli.SdkCliCommand;
-import hudson.plugins.android_emulator.sdk.cli.SdkCliCommandFactory;
 
 public class SdkCommandsTest {
 
@@ -47,7 +45,7 @@ public class SdkCommandsTest {
         assertUpgradeParamsToAllToolVersions("system-images;android-26;test;x86_64", "sys-img-x86_64-test-26");
         assertUpgradeParamsToAllToolVersions("system-images;android-24;default;x86_64", "system-images;android-24;default;x86_64");
 
-        final List<String> input = new ArrayList<String>();
+        final List<String> input = new ArrayList<>();
         input.add("tool");
         input.add("extra-android-m2repository");
         input.add("extra-google-m2repository");
@@ -70,7 +68,7 @@ public class SdkCommandsTest {
     }
 
     private void assertUpgradeParamsToAllToolVersions(final String expected, final String input) {
-        final List<String> components = new ArrayList<String>();
+        final List<String> components = new ArrayList<>();
         components.add(input);
         assertUpgradeParamsToAllToolVersions(expected, input, components);
     }
@@ -422,7 +420,7 @@ public class SdkCommandsTest {
         final SdkCliCommand updateProjectCmdV17 = SdkCliCommandFactory.getCommandsForSdk("17").getUpdateProjectCommand("proj2");
         final SdkCliCommand updateProjectCmdV04 = SdkCliCommandFactory.getCommandsForSdk("4").getUpdateProjectCommand(".");
 
-        assertEquals(null, updateProjectCmdV25_3.getTool());
+        assertNull(updateProjectCmdV25_3.getTool());
         assertEquals(Tool.ANDROID_LEGACY, updateProjectCmdV25.getTool());
         assertEquals(Tool.ANDROID_LEGACY, updateProjectCmdV17.getTool());
         assertEquals(Tool.ANDROID_LEGACY, updateProjectCmdV04.getTool());
@@ -445,7 +443,7 @@ public class SdkCommandsTest {
         final SdkCliCommand updateTestProjectCmdV17 = SdkCliCommandFactory.getCommandsForSdk("17").getUpdateTestProjectCommand("testProj2", "com.test.class");
         final SdkCliCommand updateTestProjectCmdV04 = SdkCliCommandFactory.getCommandsForSdk("4").getUpdateTestProjectCommand(".", "org.comp.proj.test.testclass");
 
-        assertEquals(null, updateTestProjectCmdV25_3.getTool());
+        assertNull(updateTestProjectCmdV25_3.getTool());
         assertEquals(Tool.ANDROID_LEGACY, updateTestProjectCmdV25.getTool());
         assertEquals(Tool.ANDROID_LEGACY, updateTestProjectCmdV17.getTool());
         assertEquals(Tool.ANDROID_LEGACY, updateTestProjectCmdV04.getTool());
@@ -468,7 +466,7 @@ public class SdkCommandsTest {
         final SdkCliCommand updateLibraryProjectCmdV17 = SdkCliCommandFactory.getCommandsForSdk("17").getUpdateLibProjectCommand("libProj2");
         final SdkCliCommand updateLibraryProjectCmdV04 = SdkCliCommandFactory.getCommandsForSdk("4").getUpdateLibProjectCommand(".");
 
-        assertEquals(null, updateLibraryProjectCmdV25_3.getTool());
+        assertNull(updateLibraryProjectCmdV25_3.getTool());
         assertEquals(Tool.ANDROID_LEGACY, updateLibraryProjectCmdV25.getTool());
         assertEquals(Tool.ANDROID_LEGACY, updateLibraryProjectCmdV17.getTool());
         assertEquals(Tool.ANDROID_LEGACY, updateLibraryProjectCmdV04.getTool());

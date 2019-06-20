@@ -172,7 +172,7 @@ public class UtilsTest {
         temp.deleteOnExit();
 
         try {
-            ConfigFileUtils.writeConfigFile(temp, new HashMap<String, String>());
+            ConfigFileUtils.writeConfigFile(temp, new HashMap<>());
             fail("Expected exception");
         } catch (IOException expectedException) {
             // expected path
@@ -195,7 +195,7 @@ public class UtilsTest {
 
         // Test 1
         // Setup test data
-        final Map<String, String> keyValues = new HashMap<String, String>();
+        final Map<String, String> keyValues = new HashMap<>();
         keyValues.put("key","some\\back\\slash\\value");
 
         ConfigFileUtils.writeConfigFile(actual, keyValues);
@@ -231,7 +231,7 @@ public class UtilsTest {
         actual.deleteOnExit();
 
         // Setup test data
-        final Map<String, String> keyValues = new LinkedHashMap<String, String>();
+        final Map<String, String> keyValues = new LinkedHashMap<>();
         keyValues.put("key","system-images\\android-24\\default\\x86_64");
         keyValues.put("xxx", "");
         keyValues.put("test", "test\\");

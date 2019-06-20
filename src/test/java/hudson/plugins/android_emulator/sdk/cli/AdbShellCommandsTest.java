@@ -6,8 +6,6 @@ import org.junit.Test;
 
 import hudson.plugins.android_emulator.constants.AndroidKeyEvent;
 import hudson.plugins.android_emulator.sdk.Tool;
-import hudson.plugins.android_emulator.sdk.cli.SdkCliCommand;
-import hudson.plugins.android_emulator.sdk.cli.SdkCliCommandFactory;
 
 public class AdbShellCommandsTest {
 

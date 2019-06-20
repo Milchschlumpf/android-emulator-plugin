@@ -4,9 +4,13 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
-public class AndroidPlatformTest extends TestCase {
+
+public class AndroidPlatformTest {
 
     @Test
     public void testValidPlatformString() {
@@ -22,19 +26,20 @@ public class AndroidPlatformTest extends TestCase {
         assertNotNull(AndroidPlatform.valueOf("1.6"));
         assertNotNull(AndroidPlatform.valueOf("4"));
         assertNotNull(AndroidPlatform.valueOf("android-4"));
-
-        assertNull(AndroidPlatform.valueOf("prefix:Comp:XXXX:4"));
-        assertNull(AndroidPlatform.valueOf("Comp:4"));
     }
 
     @Test
     public void testCreateInvalidPlatform() {
-        assertNull(AndroidPlatform.valueOf(null));
-
         final String name = "iOS 6.1";
         AndroidPlatform platform = AndroidPlatform.valueOf(name);
+        assertNotNull(platform);
         assertEquals(name, platform.getTargetName());
         assertEquals(-1, platform.getSdkLevel());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateInvalidPlatformNullValue() {
+        AndroidPlatform.valueOf(null);
     }
 
     @Test

@@ -1,41 +1,45 @@
 package hudson.plugins.android_emulator.monkey;
 
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Result;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.PrintStream;
 
-import junit.framework.TestCase;
-
-public class MonkeyRecorderTest extends TestCase {
+public class MonkeyRecorderTest {
 
     private static final String MONKEY_CRASH = "// CRASH";
     private static final String MONKEY_ANR = "// NOT RESPONDING";
     private static final String MONKEY_SUCCESS = "// Monkey finished";
 
+    @Test
     public void testNotRunForBuild_Aborted() throws InterruptedException, IOException {
         assertNoParsingForBadBuild(Result.ABORTED);
     }
 
+    @Test
     public void testNotRunForBuild_Failure() throws InterruptedException, IOException {
         assertNoParsingForBadBuild(Result.FAILURE);
     }
 
+    @Test
     public void testNotRunForBuild_NotBuild() throws InterruptedException, IOException {
         assertNoParsingForBadBuild(Result.NOT_BUILT);
     }
 
     private void assertNoParsingForBadBuild(Result buildResult) throws InterruptedException, IOException {
         // Set up build with result
-        AbstractBuild<?,?> build = mock(AbstractBuild.class);
+        AbstractBuild<?, ?> build = mock(AbstractBuild.class);
         when(build.getResult()).thenReturn(buildResult);
 
         // Execute monkey recorder which would alter the build result if it runs
@@ -47,57 +51,70 @@ public class MonkeyRecorderTest extends TestCase {
         verify(build, never()).setResult(any(Result.class));
     }
 
+    @Test
     public void testNullInput() {
         parseOutputAndAssert(null, MonkeyResult.NothingToParse);
     }
 
+    @Test
     public void testEmptyInput() {
         parseOutputAndAssert("", MonkeyResult.UnrecognisedFormat);
     }
 
+    @Test
     public void testTruncatedInput() {
         parseOutputAndAssert("// CRAS", MonkeyResult.UnrecognisedFormat);
     }
 
+    @Test
     public void testCrash() {
         parseOutputAndAssert(MONKEY_CRASH, MonkeyResult.Crash);
     }
 
+    @Test
     public void testCrash_FailureBegetsFailure() {
         parseOutputAndAssert(MONKEY_CRASH, BuildOutcome.FAILURE, Result.FAILURE, MonkeyResult.Crash);
     }
 
+    @Test
     public void testCrash_UnstableBegetsUnstable() {
         parseOutputAndAssert(MONKEY_CRASH, BuildOutcome.UNSTABLE, Result.UNSTABLE, MonkeyResult.Crash);
     }
 
+    @Test
     public void testAppNotResponding() {
         parseOutputAndAssert(MONKEY_ANR, MonkeyResult.AppNotResponding);
     }
 
+    @Test
     public void testAppNotResponding_FailureBegetsFailure() {
         parseOutputAndAssert(MONKEY_ANR, BuildOutcome.FAILURE, Result.FAILURE, MonkeyResult.AppNotResponding);
     }
 
+    @Test
     public void testAppNotResponding_UnstableBegetsUnstable() {
         parseOutputAndAssert(MONKEY_ANR, BuildOutcome.UNSTABLE, Result.UNSTABLE, MonkeyResult.AppNotResponding);
     }
 
+    @Test
     public void testSuccess() {
         parseOutputAndAssert(MONKEY_SUCCESS, MonkeyResult.Success);
     }
 
+    @Test
     public void testTotalEventCount() {
         String output = ":Monkey: seed=0 count=1234";
         parseOutputAndAssert(output, MonkeyResult.UnrecognisedFormat, 0, 1234);
     }
 
+    @Test
     public void testTotalEventCountWithActualCount() {
         String output = ":Monkey: seed=0 count=1234\n";
         output += "Events injected: 999";
         parseOutputAndAssert(output, MonkeyResult.UnrecognisedFormat, 999, 1234);
     }
 
+    @Test
     public void testSuccessWithTotalCount() {
         String output = ":Monkey: seed=0 count=1234\n";
         output += MONKEY_SUCCESS;
@@ -109,20 +126,20 @@ public class MonkeyRecorderTest extends TestCase {
     }
 
     private void parseOutputAndAssert(String monkeyOutput, MonkeyResult expectedResult,
-            int expectedEvents, int expectedTotalEvents) {
+                                      int expectedEvents, int expectedTotalEvents) {
         parseOutputAndAssert(monkeyOutput, BuildOutcome.IGNORE, null, expectedResult,
                 expectedEvents, expectedTotalEvents);
     }
 
     private void parseOutputAndAssert(String monkeyOutput, BuildOutcome desiredOutcome,
-            Result expectedBuildResult, MonkeyResult expectedResult) {
+                                      Result expectedBuildResult, MonkeyResult expectedResult) {
         parseOutputAndAssert(monkeyOutput, desiredOutcome, expectedBuildResult, expectedResult, 0, 0);
     }
 
     private void parseOutputAndAssert(String monkeyOutput, BuildOutcome desiredOutcome,
-            Result expectedBuildResult, MonkeyResult expectedResult, int expectedEvents,
-            int expectedTotalEvents) {
-        AbstractBuild<?,?> build = mock(AbstractBuild.class);
+                                      Result expectedBuildResult, MonkeyResult expectedResult, int expectedEvents,
+                                      int expectedTotalEvents) {
+        AbstractBuild<?, ?> build = mock(AbstractBuild.class);
         PrintStream logger = mock(PrintStream.class);
 
         // Parse the given output

@@ -1,15 +1,15 @@
 package hudson.plugins.android_emulator.sdk;
 
-import junit.framework.TestCase;
-
 import java.io.IOException;
 
 import org.junit.Test;
 
-public class AndroidSdkTest extends TestCase {
+import static org.junit.Assert.*;
+
+public class AndroidSdkTest {
 
     @Test
-    public void testGetSdkToolsMajorVersion() throws Exception {
+    public void testGetSdkToolsMajorVersion() {
         assertEquals(0, createSdkWithTools(null).getSdkToolsMajorVersion());
         assertEquals(20, createSdkWithTools("20").getSdkToolsMajorVersion());
         assertEquals(20, createSdkWithTools("20.0").getSdkToolsMajorVersion());

@@ -232,11 +232,12 @@ class AndroidPlatform implements Serializable {
      * and returns an better managable AndroidPlatform instance.
      *
      * @param version string representation of the platform version
-     * @return an {@code AndroidPlatform} instance represents the given platform or {@code null} on parsing error.
+     * @return an {@code AndroidPlatform} instance represents the given platform.
+     * @throws IllegalArgumentException On parsing error
      */
     public static AndroidPlatform valueOf(final String version) {
         if (Util.fixEmptyAndTrim(version) == null) {
-            return null;
+            throw new IllegalArgumentException("OS version not recognised: " + version );
         }
 
         String[] origNameParts = version.trim().split(PLATFORM_NAME_DELIMITER);
@@ -252,7 +253,7 @@ class AndroidPlatform implements Serializable {
         } else if (origNameParts.length == 1) {
             apiLevel = origNameParts[0];
         } else {
-            return null;
+            throw new IllegalArgumentException("OS version not recognised: " + version );
         }
 
         return new AndroidPlatform(version, vendorName, platformName, apiLevel);

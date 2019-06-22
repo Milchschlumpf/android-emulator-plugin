@@ -12,83 +12,95 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public interface Constants {
 
-    /** The locale to which Android emulators default if not otherwise specified. */
-    static final String DEFAULT_LOCALE = "en_US";
+    /**
+     * The locale to which Android emulators default if not otherwise specified.
+     */
+    String DEFAULT_LOCALE = "en_US";
 
-    /** Locales supported: http://developer.android.com/sdk/android-3.0.html#locs */
+    /**
+     * Locales supported: http://developer.android.com/sdk/android-3.0.html#locs
+     */
     @SuppressFBWarnings("MS_OOI_PKGPROTECT")
-    static final String[] EMULATOR_LOCALES = {
-        "ar_EG", "ar_IL", "bg_BG", "ca_ES", "cs_CZ", "da_DK", "de_AT", "de_CH",
-        "de_DE", "de_LI", "el_GR", "en_AU", "en_CA", "en_GB", "en_IE", "en_IN",
-        "en_NZ", "en_SG", "en_US", "en_ZA", "es_ES", "es_US", "fi_FI", "fr_BE",
-        "fr_CA", "fr_CH", "fr_FR", "he_IL", "hi_IN", "hr_HR", "hu_HU", "id_ID",
-        "it_CH", "it_IT", "ja_JP", "ko_KR", "lt_LT", "lv_LV", "nb_NO", "nl_BE",
-        "nl_NL", "pl_PL", "pt_BR", "pt_PT", "ro_RO", "ru_RU", "sk_SK", "sl_SI",
-        "sr_RS", "sv_SE", "th_TH", "tl_PH", "tr_TR", "uk_UA", "vi_VN", "zh_CN",
-        "zh_TW"
+    String[] EMULATOR_LOCALES = {
+            "ar_EG", "ar_IL", "bg_BG", "ca_ES", "cs_CZ", "da_DK", "de_AT", "de_CH",
+            "de_DE", "de_LI", "el_GR", "en_AU", "en_CA", "en_GB", "en_IE", "en_IN",
+            "en_NZ", "en_SG", "en_US", "en_ZA", "es_ES", "es_US", "fi_FI", "fr_BE",
+            "fr_CA", "fr_CH", "fr_FR", "he_IL", "hi_IN", "hr_HR", "hu_HU", "id_ID",
+            "it_CH", "it_IT", "ja_JP", "ko_KR", "lt_LT", "lv_LV", "nb_NO", "nl_BE",
+            "nl_NL", "pl_PL", "pt_BR", "pt_PT", "ro_RO", "ru_RU", "sk_SK", "sl_SI",
+            "sr_RS", "sv_SE", "th_TH", "tl_PH", "tr_TR", "uk_UA", "vi_VN", "zh_CN",
+            "zh_TW"
     };
 
-    /** Commonly-used hardware properties that can be emulated. */
+    /**
+     * Commonly-used hardware properties that can be emulated.
+     */
     @SuppressFBWarnings("MS_OOI_PKGPROTECT")
-    static final String[] HARDWARE_PROPERTIES = {
-        "hw.accelerometer", "hw.battery", "hw.camera", "hw.dPad", "hw.gps",
-        "hw.gsmModem", "hw.keyboard", "hw.ramSize", "hw.sdCard",
-        "hw.touchScreen", "hw.trackBall", "vm.heapSize"
+    String[] HARDWARE_PROPERTIES = {
+            "hw.accelerometer", "hw.battery", "hw.camera", "hw.dPad", "hw.gps",
+            "hw.gsmModem", "hw.keyboard", "hw.ramSize", "hw.sdCard",
+            "hw.touchScreen", "hw.trackBall", "vm.heapSize"
     };
 
-    /** Common ABIs. */
+    /**
+     * Common ABIs.
+     */
     @SuppressFBWarnings("MS_OOI_PKGPROTECT")
-    static final String[] TARGET_ABIS = {
-        "armeabi", "armeabi-v7a", "mips", "x86", "x86_64"
+    String[] TARGET_ABIS = {
+            "armeabi", "armeabi-v7a", "mips", "x86", "x86_64"
     };
 
-    /** Name of the snapshot image we will use. */
-    static final String SNAPSHOT_NAME = "jenkins";
+    /**
+     * Name of the snapshot image we will use.
+     */
+    String SNAPSHOT_NAME = "jenkins";
 
     /**
      * Recent version of the Android SDK that will be installed.
-     *
+     * <p>
      * The download URL changed from using a version to having
      * a build id. So it's crucial to keep this version in sync
      * with the BUILD_ID variable beneath.
      */
-    static final String SDK_TOOLS_DEFAULT_VERSION = "2.1";
+    String SDK_TOOLS_DEFAULT_VERSION = "2.1";
 
     /**
      * Build ID? of the recent version of the Android SDK that will be installed.
-     *
+     * <p>
      * The download URL changed from using a version to having
      * a build id. So it's crucial to keep this build id in sync
      * with the VERSION variable above.
      */
-    static final String SDK_TOOLS_DEFAULT_BUILD_ID = "6609375";
+    String SDK_TOOLS_DEFAULT_BUILD_ID = "6609375";
 
     static boolean isLatestVersion(AndroidSdk sdk) {
         return sdk != null && sdk.hasCommandLineTools() && Constants.SDK_TOOLS_DEFAULT_VERSION.equals(sdk.getSdkToolsVersion());
     }
 
     // From hudson.Util.VARIABLE
-    static final String REGEX_VARIABLE = "\\$([A-Za-z0-9_]+|\\{[A-Za-z0-9_]+\\}|\\$)";
-    static final String REGEX_AVD_NAME = "[a-zA-Z0-9._-]+";
-    static final String REGEX_LOCALE = "[a-z]{2}_[A-Z]{2}";
-    static final String REGEX_SCREEN_DENSITY = "[0-9]{2,4}|(?i)(x?x?h|[lm])dpi";
-    static final String REGEX_SCREEN_RESOLUTION = "[0-9]{3,4}x[0-9]{3,4}";
-    static final String REGEX_SCREEN_RESOLUTION_ALIAS = "(([HQ]|F?W[SQ]?)V|WX)GA(720|800|-[LP])?";
-    static final String REGEX_SCREEN_RESOLUTION_FULL = REGEX_SCREEN_RESOLUTION_ALIAS +"|"+ REGEX_SCREEN_RESOLUTION;
-    static final String REGEX_SD_CARD_SIZE = "(?i)([0-9]{1,12}) ?([KM])[B]?";
-    static final String REGEX_SNAPSHOT = "[0-9]+ +"+ SNAPSHOT_NAME +" +[0-9.]+[KMGT] ";
+    String REGEX_VARIABLE = "\\$([A-Za-z0-9_]+|\\{[A-Za-z0-9_]+\\}|\\$)";
+    String REGEX_AVD_NAME = "[a-zA-Z0-9._-]+";
+    String REGEX_LOCALE = "[a-z]{2}_[A-Z]{2}";
+    String REGEX_SCREEN_DENSITY = "[0-9]{2,4}|(?i)(x?x?h|[lm])dpi";
+    String REGEX_SCREEN_RESOLUTION = "[0-9]{3,4}x[0-9]{3,4}";
+    String REGEX_SCREEN_RESOLUTION_ALIAS = "(([HQ]|F?W[SQ]?)V|WX)GA(720|800|-[LP])?";
+    String REGEX_SCREEN_RESOLUTION_FULL = REGEX_SCREEN_RESOLUTION_ALIAS + "|" + REGEX_SCREEN_RESOLUTION;
+    String REGEX_SD_CARD_SIZE = "(?i)([0-9]{1,12}) ?([KM])[B]?";
+    String REGEX_SNAPSHOT = "[0-9]+ +" + SNAPSHOT_NAME + " +[0-9.]+[KMGT] ";
 
-    /** Environment variables the plugin uses **/
-    static final String ENV_VAR_ANDROID_ADB_SERVER_PORT = "ANDROID_ADB_SERVER_PORT";
-    static final String ENV_VAR_ANDROID_AVD_ADB_PORT = "ANDROID_AVD_ADB_PORT";
-    static final String ENV_VAR_ANDROID_AVD_DENSITY = "ANDROID_AVD_DENSITY";
+    /**
+     * Environment variables the plugin uses
+     **/
+    String ENV_VAR_ANDROID_ADB_SERVER_PORT = "ANDROID_ADB_SERVER_PORT";
+    String ENV_VAR_ANDROID_AVD_ADB_PORT = "ANDROID_AVD_ADB_PORT";
+    String ENV_VAR_ANDROID_AVD_DENSITY = "ANDROID_AVD_DENSITY";
     // Environment variable set by the plugin to specify the serial of the started AVD.
-    static final String ENV_VAR_ANDROID_AVD_DEVICE = "ANDROID_AVD_DEVICE";
-    static final String ENV_VAR_ANDROID_AVD_LOCALE = "ANDROID_AVD_LOCALE";
-    static final String ENV_VAR_ANDROID_AVD_NAME = "ANDROID_AVD_NAME";
-    static final String ENV_VAR_ANDROID_AVD_OS = "ANDROID_AVD_OS";
-    static final String ENV_VAR_ANDROID_AVD_RESOLUTION = "ANDROID_AVD_RESOLUTION";
-    static final String ENV_VAR_ANDROID_AVD_SKIN = "ANDROID_AVD_SKIN";
+    String ENV_VAR_ANDROID_AVD_DEVICE = "ANDROID_AVD_DEVICE";
+    String ENV_VAR_ANDROID_AVD_LOCALE = "ANDROID_AVD_LOCALE";
+    String ENV_VAR_ANDROID_AVD_NAME = "ANDROID_AVD_NAME";
+    String ENV_VAR_ANDROID_AVD_OS = "ANDROID_AVD_OS";
+    String ENV_VAR_ANDROID_AVD_RESOLUTION = "ANDROID_AVD_RESOLUTION";
+    String ENV_VAR_ANDROID_AVD_SKIN = "ANDROID_AVD_SKIN";
     // Environment variable set by the plugin to specify the telnet interface port.
     static final String ENV_VAR_ANDROID_AVD_USER_PORT = "ANDROID_AVD_USER_PORT";
     /**
@@ -121,7 +133,7 @@ public interface Constants {
     static final String ENV_VAR_PATH_SDK_TOOLS = "PATH+SDK_TOOLS";
     static final String ENV_VAR_QEMU_AUDIO_DRV = "QEMU_AUDIO_DRV";
 
-    static final String ENV_VALUE_QEMU_AUDIO_DRV_NONE = "none";
+    String ENV_VALUE_QEMU_AUDIO_DRV_NONE = "none";
 }
 
 enum SnapshotState {
@@ -177,6 +189,7 @@ enum AndroidPlatformVersions {
      * Retrieves the API-Level for an given Android Version (e.g: '4.2.1'), the given
      * version does not need to be the initial version for the API ('7.1' and '7.1.1'
      * will both return API 25).
+     *
      * @return the API level for the given version, or -1 if not found
      */
     public static int getAPILevelForAndroidVersion(final String androidVersion) {
@@ -185,7 +198,7 @@ enum AndroidPlatformVersions {
 
         for (int idx = 0; idx < versions.length; idx++) {
             if (Utils.isVersionOlderThan(androidVersion, versions[idx].version)) {
-                    break;
+                break;
             }
 
             api = versions[idx].apiLevel;
@@ -201,10 +214,10 @@ enum AndroidPlatformVersions {
 
 class AndroidPlatform implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private long serialVersionUID = 1L;
 
-    private static final String PLATFORM_NAME_DELIMITER = ":";
-    private static final String ANDROID_TARGET_NAME_PREFIX = "android-";
+    private static String PLATFORM_NAME_DELIMITER = ":";
+    private static String ANDROID_TARGET_NAME_PREFIX = "android-";
 
     private final String name;
     private final String platformName;
@@ -213,7 +226,7 @@ class AndroidPlatform implements Serializable {
     private final String vendorName;
 
     private AndroidPlatform(final String name,
-            final String vendorName, final String platformName, final String apiLevel) {
+                            final String vendorName, final String platformName, final String apiLevel) {
 
         this.name = name;
         this.vendorName = vendorName;
@@ -237,7 +250,7 @@ class AndroidPlatform implements Serializable {
      */
     public static AndroidPlatform valueOf(final String version) {
         if (Util.fixEmptyAndTrim(version) == null) {
-            throw new IllegalArgumentException("OS version not recognised: " + version );
+            throw new IllegalArgumentException("OS version not recognised: " + version);
         }
 
         String[] origNameParts = version.trim().split(PLATFORM_NAME_DELIMITER);
@@ -253,7 +266,7 @@ class AndroidPlatform implements Serializable {
         } else if (origNameParts.length == 1) {
             apiLevel = origNameParts[0];
         } else {
-            throw new IllegalArgumentException("OS version not recognised: " + version );
+            throw new IllegalArgumentException("OS version not recognised: " + version);
         }
 
         return new AndroidPlatform(version, vendorName, platformName, apiLevel);
@@ -328,6 +341,7 @@ class AndroidPlatform implements Serializable {
     /**
      * Trim the string and remove leading and trailing '/', additionally two or more preceding
      * slashes are trimmed to a single slash
+     *
      * @param original the string
      * @return the trimmed version of the string
      */
@@ -444,7 +458,7 @@ class AndroidPlatform implements Serializable {
             names.add(AndroidPlatform.getTargetName(version.apiLevel));
         }
 
-        return names.toArray(new String[names.size()]);
+        return names.toArray(new String[0]);
     }
 
     @Override

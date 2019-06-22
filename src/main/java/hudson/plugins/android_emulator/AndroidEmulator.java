@@ -182,7 +182,6 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
     }
 
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public Environment setUp(AbstractBuild build, final Launcher launcher, BuildListener listener)
             throws IOException, InterruptedException {
         final PrintStream logger = listener.getLogger();
@@ -192,6 +191,7 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
 
         // Substitute environment and build variables into config
         final EnvVars envVars = Utils.getEnvironment(build, listener);
+        @SuppressWarnings("unchecked")
         final Map<String, String> buildVars = build.getBuildVariables();
 
         // Device properties
@@ -235,7 +235,7 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
         // Build emulator config, ensuring that variables expand to valid SDK values
         EmulatorConfig emuConfig;
         boolean shouldKeepInWorkspace = descriptor.shouldKeepInWorkspace && Util.fixEmptyAndTrim(avdName) == null;
-        final String androidSdkHome = (envVars != null && shouldKeepInWorkspace 
+        final String androidSdkHome = (envVars != null && shouldKeepInWorkspace
                 ? envVars.get(Constants.ENV_VAR_JENKINS_WORKSPACE)
                 : envVars.containsKey(Constants.ENV_VAR_ANDROID_SDK_HOME) ? envVars.get(Constants.ENV_VAR_ANDROID_SDK_HOME) : System.getProperty("user.home"));
         try {
@@ -660,7 +660,6 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
                 }
             }
             try {
-                logcatStream.close();
             } catch (Exception ignore) {}
 
             // Archive the logs

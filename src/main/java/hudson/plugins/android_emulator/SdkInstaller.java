@@ -55,7 +55,7 @@ public class SdkInstaller {
     private static final String SDK_INFO_FILENAME = ".jenkins-install-info";
 
     /** Map of nodes to locks, to ensure only one executor attempts SDK installation at once. */
-    private static final Map<Node, Semaphore> mutexByNode = new WeakHashMap<Node, Semaphore>();
+    private static final Map<Node, Semaphore> mutexByNode = new WeakHashMap<>();
 
     /**
      * Downloads and installs the Android SDK on the machine we're executing on.
@@ -87,9 +87,7 @@ public class SdkInstaller {
         String androidHome;
         try {
             androidHome = installBasicSdk(listener, node).getRemote();
-        } catch (IOException e) {
-            throw new SdkInstallationException(Messages.SDK_DOWNLOAD_FAILED(), e);
-        } catch (SdkUnavailableException e) {
+        } catch (IOException | SdkUnavailableException e) {
             throw new SdkInstallationException(Messages.SDK_DOWNLOAD_FAILED(), e);
         }
 
@@ -281,10 +279,6 @@ public class SdkInstaller {
             String platform, String abi, final boolean skipSystemImageInstall) throws IOException, InterruptedException {
 
         final AndroidPlatform androidPlatform = AndroidPlatform.valueOf(platform);
-        if (androidPlatform == null) {
-            log(logger, Messages.SDK_PLATFORM_STRING_UNRECOGNISED(platform));
-            return;
-        }
 
         // Check whether this platform is already installed
         if (isPlatformInstalled(logger, launcher, sdk, androidPlatform.getName(), abi, skipSystemImageInstall)) {
@@ -454,7 +448,7 @@ public class SdkInstaller {
         if (node == null) {
             throw new BuildNodeUnavailableException();
         }
-        synchronized (node) {
+        synchronized (SdkInstaller.class) {
             semaphore = mutexByNode.get(node);
             if (semaphore == null) {
                 semaphore = new Semaphore(1);

@@ -56,9 +56,8 @@ public class AndroidSdk implements Serializable {
 
     private void determineVersion() throws IOException {
         // Determine SDK tools version
-        File toolsPropFile = new File(sdkRoot, "tools/source.properties");
-        Map<String, String> toolsProperties;
-        toolsProperties = ConfigFileUtils.parseConfigFile(toolsPropFile);
+        final File toolsPropFile = new File(sdkRoot, "tools/source.properties");
+        final Map<String, String> toolsProperties = ConfigFileUtils.parseConfigFile(toolsPropFile);
         sdkToolsPackage = Util.fixEmptyAndTrim(toolsProperties.get("Pkg.Path"));
         if (sdkToolsPackage != null) {
             int indexOf = sdkToolsPackage.indexOf(';');

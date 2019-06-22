@@ -18,8 +18,8 @@ import hudson.plugins.android_emulator.Messages;
 
 public class ConfigFileUtils {
 
-    private static String CONFIG_FILE_EXT_INI = "ini";
-    private static String CONFIG_FILE_EXT_PROPS = "properties";
+    private static final String CONFIG_FILE_EXT_INI = "ini";
+    private static final String CONFIG_FILE_EXT_PROPS = "properties";
 
     /**
      * Parses the contents of a .properties or .ini file into a map.
@@ -28,7 +28,7 @@ public class ConfigFileUtils {
      * @return The key-value pairs contained in the file, ignoring any comments or blank lines.
      * @throws IOException If the file could not be read or an unsupported file extension is used.
      */
-    public static Map<String, String> parseConfigFile(File configFile) throws IOException {
+    public static Map<String, String> parseConfigFile(final File configFile) throws IOException {
         final String fileExtension = getLowerCaseFileExtension(configFile);
 
         if (fileExtension.equals(CONFIG_FILE_EXT_PROPS)) {

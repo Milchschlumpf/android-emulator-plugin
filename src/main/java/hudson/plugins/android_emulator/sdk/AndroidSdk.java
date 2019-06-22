@@ -53,9 +53,8 @@ public class AndroidSdk implements Serializable {
 
     private void determineVersion() throws IOException {
         // Determine SDK tools version
-        File toolsPropFile = new File(sdkRoot, "tools/source.properties");
-        Map<String, String> toolsProperties;
-        toolsProperties = ConfigFileUtils.parseConfigFile(toolsPropFile);
+        final File toolsPropFile = new File(sdkRoot, "tools/source.properties");
+        final Map<String, String> toolsProperties = ConfigFileUtils.parseConfigFile(toolsPropFile);
         sdkToolsVersion = Util.fixEmptyAndTrim(toolsProperties.get("Pkg.Revision"));
     }
 
@@ -90,7 +89,7 @@ public class AndroidSdk implements Serializable {
             return 0;
         }
         // We create this object on-demand rather than holding on to it, as VersionNumber is not Serializable
-        return new VersionNumber(sdkToolsVersion).digit(0);
+        return new VersionNumber(sdkToolsVersion).getDigitAt(0);
     }
 
     /**

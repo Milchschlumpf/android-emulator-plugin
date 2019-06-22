@@ -183,16 +183,20 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
     }
 
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public Environment setUp(AbstractBuild build, final Launcher launcher, BuildListener listener)
             throws IOException, InterruptedException {
         final PrintStream logger = listener.getLogger();
         if (descriptor == null) {
-            descriptor = Jenkins.getInstance().getDescriptorByType(DescriptorImpl.class);
+            final Jenkins jenkins = Jenkins.getInstanceOrNull();
+            if(jenkins == null) {
+                throw new IOException("Jenkins not available;");
+            }
+            descriptor = jenkins.getDescriptorByType(DescriptorImpl.class);
         }
 
         // Substitute environment and build variables into config
         final EnvVars envVars = Utils.getEnvironment(build, listener);
+        @SuppressWarnings("unchecked")
         final Map<String, String> buildVars = build.getBuildVariables();
 
         // Device properties
@@ -659,7 +663,6 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
                 }
             }
             try {
-                logcatStream.close();
             } catch (Exception ignore) {}
 
             // Archive the logs

@@ -27,6 +27,7 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.regex.Pattern;
+
 import jenkins.security.MasterToSlaveCallable;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -54,8 +55,8 @@ class EmulatorConfig implements Serializable {
     private final String avdNameSuffix;
 
     private EmulatorConfig(String avdName, boolean wipeData, boolean showWindow,
-            boolean useSnapshots, String commandLineOptions, String androidSdkHome, String executable, String
-            avdNameSuffix) {
+                           boolean useSnapshots, String commandLineOptions, String androidSdkHome, String executable, String
+                                   avdNameSuffix) {
         this.avdName = avdName;
         this.wipeData = wipeData;
         this.showWindow = showWindow;
@@ -67,10 +68,10 @@ class EmulatorConfig implements Serializable {
     }
 
     private EmulatorConfig(String osVersion, String screenDensity, String screenResolution,
-            String deviceLocale, String sdCardSize, boolean wipeData, boolean showWindow,
-            boolean useSnapshots, String commandLineOptions, String targetAbi, String deviceDefinition,
-            String androidSdkHome, String executable, String avdNameSuffix)
-                throws IllegalArgumentException {
+                           String deviceLocale, String sdCardSize, boolean wipeData, boolean showWindow,
+                           boolean useSnapshots, String commandLineOptions, String targetAbi, String deviceDefinition,
+                           String androidSdkHome, String executable, String avdNameSuffix)
+            throws IllegalArgumentException {
         if (osVersion == null || screenDensity == null || screenResolution == null) {
             throw new IllegalArgumentException("Valid OS version and screen properties must be supplied.");
         }
@@ -81,21 +82,17 @@ class EmulatorConfig implements Serializable {
             osVersion = osVersion.substring(1, targetLength - 1);
         }
         screenDensity = screenDensity.toLowerCase();
-        if (screenResolution.matches("(?i)"+ Constants.REGEX_SCREEN_RESOLUTION_ALIAS)) {
+        if (screenResolution.matches("(?i)" + Constants.REGEX_SCREEN_RESOLUTION_ALIAS)) {
             screenResolution = screenResolution.toUpperCase();
-        } else if (screenResolution.matches("(?i)"+ Constants.REGEX_SCREEN_RESOLUTION)) {
+        } else if (screenResolution.matches("(?i)" + Constants.REGEX_SCREEN_RESOLUTION)) {
             screenResolution = screenResolution.toLowerCase();
         }
         if (deviceLocale != null && deviceLocale.length() > 4) {
-            deviceLocale = deviceLocale.substring(0, 2).toLowerCase() +"_"
-                + deviceLocale.substring(3).toUpperCase();
+            deviceLocale = deviceLocale.substring(0, 2).toLowerCase() + "_"
+                    + deviceLocale.substring(3).toUpperCase();
         }
 
         this.osVersion = AndroidPlatform.valueOf(osVersion);
-        if (this.osVersion == null) {
-            throw new IllegalArgumentException(
-                    "OS version not recognised: " + osVersion);
-        }
         this.screenDensity = ScreenDensity.valueOf(screenDensity);
         if (this.screenDensity == null) {
             throw new IllegalArgumentException(
@@ -122,10 +119,10 @@ class EmulatorConfig implements Serializable {
         this.avdNameSuffix = avdNameSuffix;
     }
 
-    public static final EmulatorConfig create(String avdName, String osVersion, String screenDensity,
-            String screenResolution, String deviceLocale, String sdCardSize, boolean wipeData,
-            boolean showWindow, boolean useSnapshots, String commandLineOptions, String targetAbi,
-            String deviceDefinition, String androidSdkHome, String executable, String avdNameSuffix) {
+    public static EmulatorConfig create(String avdName, String osVersion, String screenDensity,
+                                        String screenResolution, String deviceLocale, String sdCardSize, boolean wipeData,
+                                        boolean showWindow, boolean useSnapshots, String commandLineOptions, String targetAbi,
+                                        String deviceDefinition, String androidSdkHome, String executable, String avdNameSuffix) {
         if (Util.fixEmptyAndTrim(avdName) == null) {
             return new EmulatorConfig(osVersion, screenDensity, screenResolution, deviceLocale, sdCardSize, wipeData,
                     showWindow, useSnapshots, commandLineOptions, targetAbi, deviceDefinition, androidSdkHome, executable, avdNameSuffix);
@@ -135,14 +132,11 @@ class EmulatorConfig implements Serializable {
                 avdNameSuffix);
     }
 
-    public static final String getAvdName(String avdName, String osVersion, String screenDensity,
-            String screenResolution, String deviceLocale, String targetAbi, String deviceDefinition,
-            String avdNameSuffix) {
-        try {
-            return create(avdName, osVersion, screenDensity, screenResolution, deviceLocale, null, false, false, false,
-                    null, targetAbi, deviceDefinition, null, null, avdNameSuffix).getAvdName();
-        } catch (IllegalArgumentException e) {}
-        return null;
+    public static String getAvdName(String avdName, String osVersion, String screenDensity,
+                                    String screenResolution, String deviceLocale, String targetAbi, String deviceDefinition,
+                                    String avdNameSuffix) {
+        return create(avdName, osVersion, screenDensity, screenResolution, deviceLocale, null, false, false, false,
+                null, targetAbi, deviceDefinition, null, null, avdNameSuffix).getAvdName();
     }
 
     public boolean isNamedEmulator() {
@@ -182,7 +176,9 @@ class EmulatorConfig implements Serializable {
         return osVersion;
     }
 
-    public String getTargetAbi() { return targetAbi; }
+    public String getTargetAbi() {
+        return targetAbi;
+    }
 
     public String getDeviceDefinition() {
         return deviceDefinition;
@@ -243,8 +239,8 @@ class EmulatorConfig implements Serializable {
     /**
      * Gets a task that ensures that an Android AVD exists for this instance's configuration.
      *
-     * @param androidSdk  The Android SDK to use.
-     * @param listener The listener to use for logging.
+     * @param androidSdk The Android SDK to use.
+     * @param listener   The listener to use for logging.
      * @return A Callable that will handle the detection/creation of an appropriate AVD.
      */
     public Callable<Boolean, AndroidEmulatorException> getEmulatorCreationTask(AndroidSdk androidSdk,
@@ -255,9 +251,8 @@ class EmulatorConfig implements Serializable {
     /**
      * Gets a task that updates the hardware properties of the AVD for this instance.
      *
-     *
-     * @param hardwareProperties  The hardware properties to update the AVD with.
-     * @param listener The listener to use for logging.
+     * @param hardwareProperties The hardware properties to update the AVD with.
+     * @param listener           The listener to use for logging.
      * @return A Callable that will update the config of the current AVD.
      */
     public Callable<Void, IOException> getEmulatorConfigTask(HardwareProperty[] hardwareProperties,
@@ -277,7 +272,6 @@ class EmulatorConfig implements Serializable {
     /**
      * Gets a task that deletes the AVD corresponding to this instance's configuration.
      *
-     *
      * @param listener The listener to use for logging.
      * @return A Callable that will delete the AVD with for this configuration.
      */
@@ -290,7 +284,7 @@ class EmulatorConfig implements Serializable {
     }
 
     private File getAvdDirectory(final File homeDir) {
-        return new File(getAvdHome(homeDir), getAvdName() +".avd");
+        return new File(getAvdHome(homeDir), getAvdName() + ".avd");
     }
 
     public File getAvdMetadataFile() {
@@ -302,12 +296,12 @@ class EmulatorConfig implements Serializable {
         return new File(getAvdDirectory(homeDir), "config.ini");
     }
 
-    private Map<String,String> parseAvdConfigFile(File homeDir) throws IOException {
+    private Map<String, String> parseAvdConfigFile(File homeDir) throws IOException {
         File configFile = getAvdConfigFile(homeDir);
         return ConfigFileUtils.parseConfigFile(configFile);
     }
 
-    private void writeAvdConfigFile(File homeDir, Map<String,String> values) throws IOException {
+    private void writeAvdConfigFile(File homeDir, Map<String, String> values) throws IOException {
         final File configFile = getAvdConfigFile(homeDir);
         ConfigFileUtils.writeConfigFile(configFile, values);
     }
@@ -316,8 +310,8 @@ class EmulatorConfig implements Serializable {
      * Sets or overwrites a key-value pair in the AVD config file.
      *
      * @param homeDir AVD home directory.
-     * @param key Key to set.
-     * @param value Value to set.
+     * @param key     Key to set.
+     * @param value   Value to set.
      * @throws EmulatorCreationException If reading or writing the file failed.
      */
     private void setAvdConfigValue(File homeDir, String key, String value)
@@ -338,7 +332,7 @@ class EmulatorConfig implements Serializable {
      * @return A string of command line arguments.
      */
     public String getCommandArguments(SnapshotState snapshotState, final AndroidSdk androidSdk,
-            int userPort, int adbPort, int callbackPort, int consoleTimeout) {
+                                      int userPort, int adbPort, int callbackPort, int consoleTimeout) {
         StringBuilder sb = new StringBuilder();
 
         // Stick to using the original version of the emulator for now, as otherwise we can't use
@@ -377,7 +371,7 @@ class EmulatorConfig implements Serializable {
         // Snapshots
         if (snapshotState == SnapshotState.BOOT) {
             // For builds after initial snapshot setup, start directly from the "jenkins" snapshot
-            sb.append(" -snapshot "+ Constants.SNAPSHOT_NAME);
+            sb.append(" -snapshot " + Constants.SNAPSHOT_NAME);
             sb.append(" -no-snapshot-save");
         } else if (androidSdk.supportsSnapshots()) {
             // For the first boot, or snapshot-free builds, do not load any snapshots that may exist
@@ -403,7 +397,7 @@ class EmulatorConfig implements Serializable {
     /**
      * Determines whether a snapshot image has already been created for this emulator.
      *
-     * @throws IOException If execution of the emulator command fails.
+     * @throws IOException          If execution of the emulator command fails.
      * @throws InterruptedException If execution of the emulator command is interrupted.
      */
     @SuppressFBWarnings("DM_DEFAULT_ENCODING")
@@ -425,7 +419,7 @@ class EmulatorConfig implements Serializable {
 
     /**
      * A task that locates or creates an AVD based on our local state.
-     *
+     * <p>
      * Returns {@code TRUE} if an AVD already existed with these properties, otherwise returns
      * {@code FALSE} if an AVD was newly created, and throws an AndroidEmulatorException if the
      * given AVD or parts required to generate a new AVD were not found.
@@ -630,7 +624,7 @@ class EmulatorConfig implements Serializable {
             // print the rest of stdout (for debugging purposes)
             final String output = procstdout.readContent();
             if (output != null && !output.isEmpty()) {
-                    AndroidEmulator.log(logger, output, true);
+                AndroidEmulator.log(logger, output, true);
             }
 
             // Do a sanity check to ensure the AVD was really created
@@ -672,7 +666,7 @@ class EmulatorConfig implements Serializable {
 
     /**
      * A task that updates the hardware properties of this AVD config.
-     *
+     * <p>
      * Throws an IOException if the AVD's config could not be read or written.
      */
     private final class EmulatorConfigTask extends MasterToSlaveCallable<Void, IOException> {
@@ -713,7 +707,9 @@ class EmulatorConfig implements Serializable {
         }
     }
 
-    /** Writes an empty emulator auth file. */
+    /**
+     * Writes an empty emulator auth file.
+     */
     private static final class EmulatorAuthFileTask extends MasterToSlaveCallable<Void, IOException> {
 
         private static final long serialVersionUID = 1L;
@@ -737,7 +733,9 @@ class EmulatorConfig implements Serializable {
 
     }
 
-    /** A task that deletes the AVD corresponding to our local state. */
+    /**
+     * A task that deletes the AVD corresponding to our local state.
+     */
     private final class EmulatorDeletionTask extends MasterToSlaveCallable<Boolean, Exception> {
 
         private static final long serialVersionUID = 1L;

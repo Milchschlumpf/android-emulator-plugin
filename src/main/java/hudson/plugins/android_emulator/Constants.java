@@ -11,101 +11,113 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public interface Constants {
 
-    /** The locale to which Android emulators default if not otherwise specified. */
-    static final String DEFAULT_LOCALE = "en_US";
+    /**
+     * The locale to which Android emulators default if not otherwise specified.
+     */
+    String DEFAULT_LOCALE = "en_US";
 
-    /** Locales supported: http://developer.android.com/sdk/android-3.0.html#locs */
+    /**
+     * Locales supported: http://developer.android.com/sdk/android-3.0.html#locs
+     */
     @SuppressFBWarnings("MS_OOI_PKGPROTECT")
-    static final String[] EMULATOR_LOCALES = {
-        "ar_EG", "ar_IL", "bg_BG", "ca_ES", "cs_CZ", "da_DK", "de_AT", "de_CH",
-        "de_DE", "de_LI", "el_GR", "en_AU", "en_CA", "en_GB", "en_IE", "en_IN",
-        "en_NZ", "en_SG", "en_US", "en_ZA", "es_ES", "es_US", "fi_FI", "fr_BE",
-        "fr_CA", "fr_CH", "fr_FR", "he_IL", "hi_IN", "hr_HR", "hu_HU", "id_ID",
-        "it_CH", "it_IT", "ja_JP", "ko_KR", "lt_LT", "lv_LV", "nb_NO", "nl_BE",
-        "nl_NL", "pl_PL", "pt_BR", "pt_PT", "ro_RO", "ru_RU", "sk_SK", "sl_SI",
-        "sr_RS", "sv_SE", "th_TH", "tl_PH", "tr_TR", "uk_UA", "vi_VN", "zh_CN",
-        "zh_TW"
+    String[] EMULATOR_LOCALES = {
+            "ar_EG", "ar_IL", "bg_BG", "ca_ES", "cs_CZ", "da_DK", "de_AT", "de_CH",
+            "de_DE", "de_LI", "el_GR", "en_AU", "en_CA", "en_GB", "en_IE", "en_IN",
+            "en_NZ", "en_SG", "en_US", "en_ZA", "es_ES", "es_US", "fi_FI", "fr_BE",
+            "fr_CA", "fr_CH", "fr_FR", "he_IL", "hi_IN", "hr_HR", "hu_HU", "id_ID",
+            "it_CH", "it_IT", "ja_JP", "ko_KR", "lt_LT", "lv_LV", "nb_NO", "nl_BE",
+            "nl_NL", "pl_PL", "pt_BR", "pt_PT", "ro_RO", "ru_RU", "sk_SK", "sl_SI",
+            "sr_RS", "sv_SE", "th_TH", "tl_PH", "tr_TR", "uk_UA", "vi_VN", "zh_CN",
+            "zh_TW"
     };
 
-    /** Commonly-used hardware properties that can be emulated. */
+    /**
+     * Commonly-used hardware properties that can be emulated.
+     */
     @SuppressFBWarnings("MS_OOI_PKGPROTECT")
-    static final String[] HARDWARE_PROPERTIES = {
-        "hw.accelerometer", "hw.battery", "hw.camera", "hw.dPad", "hw.gps",
-        "hw.gsmModem", "hw.keyboard", "hw.ramSize", "hw.sdCard",
-        "hw.touchScreen", "hw.trackBall", "vm.heapSize"
+    String[] HARDWARE_PROPERTIES = {
+            "hw.accelerometer", "hw.battery", "hw.camera", "hw.dPad", "hw.gps",
+            "hw.gsmModem", "hw.keyboard", "hw.ramSize", "hw.sdCard",
+            "hw.touchScreen", "hw.trackBall", "vm.heapSize"
     };
 
-    /** Common ABIs. */
+    /**
+     * Common ABIs.
+     */
     @SuppressFBWarnings("MS_OOI_PKGPROTECT")
-    static final String[] TARGET_ABIS = {
-        "armeabi", "armeabi-v7a", "mips", "x86", "x86_64"
+    String[] TARGET_ABIS = {
+            "armeabi", "armeabi-v7a", "mips", "x86", "x86_64"
     };
 
-    /** Name of the snapshot image we will use. */
-    static final String SNAPSHOT_NAME = "jenkins";
+    /**
+     * Name of the snapshot image we will use.
+     */
+    String SNAPSHOT_NAME = "jenkins";
 
     /**
      * Recent version of the Android SDK that will be installed.
-     *
+     * <p>
      * The download URL changed from using a version to having
      * a build id. So it's crucial to keep this version in sync
      * with the BUILD_ID variable beneath.
      */
-    static final String SDK_TOOLS_DEFAULT_VERSION = "26.0.1";
+    String SDK_TOOLS_DEFAULT_VERSION = "26.0.1";
 
     /**
      * Build ID? of the recent version of the Android SDK that will be installed.
-     *
+     * <p>
      * The download URL changed from using a version to having
      * a build id. So it's crucial to keep this build id in sync
      * with the VERSION variable above.
      */
-    static final String SDK_TOOLS_DEFAULT_BUILD_ID = "3859397";
+    String SDK_TOOLS_DEFAULT_BUILD_ID = "3859397";
 
     // From hudson.Util.VARIABLE
-    static final String REGEX_VARIABLE = "\\$([A-Za-z0-9_]+|\\{[A-Za-z0-9_]+\\}|\\$)";
-    static final String REGEX_AVD_NAME = "[a-zA-Z0-9._-]+";
-    static final String REGEX_LOCALE = "[a-z]{2}_[A-Z]{2}";
-    static final String REGEX_SCREEN_DENSITY = "[0-9]{2,4}|(?i)(x?x?h|[lm])dpi";
-    static final String REGEX_SCREEN_RESOLUTION = "[0-9]{3,4}x[0-9]{3,4}";
-    static final String REGEX_SCREEN_RESOLUTION_ALIAS = "(([HQ]|F?W[SQ]?)V|WX)GA(720|800|-[LP])?";
-    static final String REGEX_SCREEN_RESOLUTION_FULL = REGEX_SCREEN_RESOLUTION_ALIAS +"|"+ REGEX_SCREEN_RESOLUTION;
-    static final String REGEX_SD_CARD_SIZE = "(?i)([0-9]{1,12}) ?([KM])[B]?";
-    static final String REGEX_SNAPSHOT = "[0-9]+ +"+ SNAPSHOT_NAME +" +[0-9.]+[KMGT] ";
+    String REGEX_VARIABLE = "\\$([A-Za-z0-9_]+|\\{[A-Za-z0-9_]+\\}|\\$)";
+    String REGEX_AVD_NAME = "[a-zA-Z0-9._-]+";
+    String REGEX_LOCALE = "[a-z]{2}_[A-Z]{2}";
+    String REGEX_SCREEN_DENSITY = "[0-9]{2,4}|(?i)(x?x?h|[lm])dpi";
+    String REGEX_SCREEN_RESOLUTION = "[0-9]{3,4}x[0-9]{3,4}";
+    String REGEX_SCREEN_RESOLUTION_ALIAS = "(([HQ]|F?W[SQ]?)V|WX)GA(720|800|-[LP])?";
+    String REGEX_SCREEN_RESOLUTION_FULL = REGEX_SCREEN_RESOLUTION_ALIAS + "|" + REGEX_SCREEN_RESOLUTION;
+    String REGEX_SD_CARD_SIZE = "(?i)([0-9]{1,12}) ?([KM])[B]?";
+    String REGEX_SNAPSHOT = "[0-9]+ +" + SNAPSHOT_NAME + " +[0-9.]+[KMGT] ";
 
-    /** Environment variables the plugin uses **/
-    static final String ENV_VAR_ANDROID_ADB_SERVER_PORT = "ANDROID_ADB_SERVER_PORT";
-    static final String ENV_VAR_ANDROID_AVD_ADB_PORT = "ANDROID_AVD_ADB_PORT";
-    static final String ENV_VAR_ANDROID_AVD_DENSITY = "ANDROID_AVD_DENSITY";
+    /**
+     * Environment variables the plugin uses
+     **/
+    String ENV_VAR_ANDROID_ADB_SERVER_PORT = "ANDROID_ADB_SERVER_PORT";
+    String ENV_VAR_ANDROID_AVD_ADB_PORT = "ANDROID_AVD_ADB_PORT";
+    String ENV_VAR_ANDROID_AVD_DENSITY = "ANDROID_AVD_DENSITY";
     // Environment variable set by the plugin to specify the serial of the started AVD.
-    static final String ENV_VAR_ANDROID_AVD_DEVICE = "ANDROID_AVD_DEVICE";
-    static final String ENV_VAR_ANDROID_AVD_LOCALE = "ANDROID_AVD_LOCALE";
-    static final String ENV_VAR_ANDROID_AVD_NAME = "ANDROID_AVD_NAME";
-    static final String ENV_VAR_ANDROID_AVD_OS = "ANDROID_AVD_OS";
-    static final String ENV_VAR_ANDROID_AVD_RESOLUTION = "ANDROID_AVD_RESOLUTION";
-    static final String ENV_VAR_ANDROID_AVD_SKIN = "ANDROID_AVD_SKIN";
+    String ENV_VAR_ANDROID_AVD_DEVICE = "ANDROID_AVD_DEVICE";
+    String ENV_VAR_ANDROID_AVD_LOCALE = "ANDROID_AVD_LOCALE";
+    String ENV_VAR_ANDROID_AVD_NAME = "ANDROID_AVD_NAME";
+    String ENV_VAR_ANDROID_AVD_OS = "ANDROID_AVD_OS";
+    String ENV_VAR_ANDROID_AVD_RESOLUTION = "ANDROID_AVD_RESOLUTION";
+    String ENV_VAR_ANDROID_AVD_SKIN = "ANDROID_AVD_SKIN";
     // Environment variable set by the plugin to specify the telnet interface port.
-    static final String ENV_VAR_ANDROID_AVD_USER_PORT = "ANDROID_AVD_USER_PORT";
-    static final String ENV_VAR_ANDROID_HOME = "ANDROID_HOME";
-    static final String ENV_VAR_ANDROID_SDK = "ANDROID_SDK";
-    static final String ENV_VAR_ANDROID_SDK_HOME = "ANDROID_SDK_HOME";
-    static final String ENV_VAR_ANDROID_SDK_ROOT = "ANDROID_SDK_ROOT";
-    static final String ENV_VAR_ANDROID_SERIAL = "ANDROID_SERIAL";
-    static final String ENV_VAR_ANDROID_TMP_LOGCAT_FILE = "ANDROID_TMP_LOGCAT_FILE";
-    static final String ENV_VAR_ANDROID_USE_SDK_WRAPPER = "USE_SDK_WRAPPER";
-    static final String ENV_VAR_JENKINS_ANDROID_HOME = "JENKINS_ANDROID_HOME";
-    static final String ENV_VAR_JENKINS_WORKSPACE = "WORKSPACE";
-    static final String ENV_VAR_LD_LIBRARY_PATH = "LD_LIBRARY_PATH";
-    static final String ENV_VAR_SYSTEM_HOME = "HOME";
-    static final String ENV_VAR_SYSTEM_HOMEDRIVE = "HOMEDRIVE";
-    static final String ENV_VAR_SYSTEM_HOMEPATH = "HOMEPATH";
-    static final String ENV_VAR_SYSTEM_PATH = "PATH";
-    static final String ENV_VAR_SYSTEM_USERPROFILE = "USERPROFILE";
-    static final String ENV_VAR_PATH_SDK_PLATFORM_TOOLS = "PATH+SDK_PLATFORM_TOOLS";
-    static final String ENV_VAR_PATH_SDK_TOOLS = "PATH+SDK_TOOLS";
-    static final String ENV_VAR_QEMU_AUDIO_DRV = "QEMU_AUDIO_DRV";
+    String ENV_VAR_ANDROID_AVD_USER_PORT = "ANDROID_AVD_USER_PORT";
+    String ENV_VAR_ANDROID_HOME = "ANDROID_HOME";
+    String ENV_VAR_ANDROID_SDK = "ANDROID_SDK";
+    String ENV_VAR_ANDROID_SDK_HOME = "ANDROID_SDK_HOME";
+    String ENV_VAR_ANDROID_SDK_ROOT = "ANDROID_SDK_ROOT";
+    String ENV_VAR_ANDROID_SERIAL = "ANDROID_SERIAL";
+    String ENV_VAR_ANDROID_TMP_LOGCAT_FILE = "ANDROID_TMP_LOGCAT_FILE";
+    String ENV_VAR_ANDROID_USE_SDK_WRAPPER = "USE_SDK_WRAPPER";
+    String ENV_VAR_JENKINS_ANDROID_HOME = "JENKINS_ANDROID_HOME";
+    String ENV_VAR_JENKINS_WORKSPACE = "WORKSPACE";
+    String ENV_VAR_LD_LIBRARY_PATH = "LD_LIBRARY_PATH";
+    String ENV_VAR_SYSTEM_HOME = "HOME";
+    String ENV_VAR_SYSTEM_HOMEDRIVE = "HOMEDRIVE";
+    String ENV_VAR_SYSTEM_HOMEPATH = "HOMEPATH";
+    String ENV_VAR_SYSTEM_PATH = "PATH";
+    String ENV_VAR_SYSTEM_USERPROFILE = "USERPROFILE";
+    String ENV_VAR_PATH_SDK_PLATFORM_TOOLS = "PATH+SDK_PLATFORM_TOOLS";
+    String ENV_VAR_PATH_SDK_TOOLS = "PATH+SDK_TOOLS";
+    String ENV_VAR_QEMU_AUDIO_DRV = "QEMU_AUDIO_DRV";
 
-    static final String ENV_VALUE_QEMU_AUDIO_DRV_NONE = "none";
+    String ENV_VALUE_QEMU_AUDIO_DRV_NONE = "none";
 }
 
 enum SnapshotState {
@@ -158,6 +170,7 @@ enum AndroidPlatformVersions {
      * Retrieves the API-Level for an given Android Version (e.g: '4.2.1'), the given
      * version does not need to be the initial version for the API ('7.1' and '7.1.1'
      * will both return API 25).
+     *
      * @return the API level for the given version, or -1 if not found
      */
     public static int getAPILevelForAndroidVersion(final String androidVersion) {
@@ -166,7 +179,7 @@ enum AndroidPlatformVersions {
 
         for (int idx = 0; idx < versions.length; idx++) {
             if (Utils.isVersionOlderThan(androidVersion, versions[idx].version)) {
-                    break;
+                break;
             }
 
             api = versions[idx].apiLevel;
@@ -182,10 +195,10 @@ enum AndroidPlatformVersions {
 
 class AndroidPlatform implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private long serialVersionUID = 1L;
 
-    private static final String PLATFORM_NAME_DELIMITER = ":";
-    private static final String ANDROID_TARGET_NAME_PREFIX = "android-";
+    private static String PLATFORM_NAME_DELIMITER = ":";
+    private static String ANDROID_TARGET_NAME_PREFIX = "android-";
 
     private final String name;
     private final String platformName;
@@ -194,7 +207,7 @@ class AndroidPlatform implements Serializable {
     private final String vendorName;
 
     private AndroidPlatform(final String name,
-            final String vendorName, final String platformName, final String apiLevel) {
+                            final String vendorName, final String platformName, final String apiLevel) {
 
         this.name = name;
         this.vendorName = vendorName;
@@ -218,7 +231,7 @@ class AndroidPlatform implements Serializable {
      */
     public static AndroidPlatform valueOf(final String version) {
         if (Util.fixEmptyAndTrim(version) == null) {
-            throw new IllegalArgumentException("OS version not recognised: " + version );
+            throw new IllegalArgumentException("OS version not recognised: " + version);
         }
 
         String[] origNameParts = version.trim().split(PLATFORM_NAME_DELIMITER);
@@ -234,7 +247,7 @@ class AndroidPlatform implements Serializable {
         } else if (origNameParts.length == 1) {
             apiLevel = origNameParts[0];
         } else {
-            throw new IllegalArgumentException("OS version not recognised: " + version );
+            throw new IllegalArgumentException("OS version not recognised: " + version);
         }
 
         return new AndroidPlatform(version, vendorName, platformName, apiLevel);
@@ -309,6 +322,7 @@ class AndroidPlatform implements Serializable {
     /**
      * Trim the string and remove leading and trailing '/', additionally two or more preceding
      * slashes are trimmed to a single slash
+     *
      * @param original the string
      * @return the trimmed version of the string
      */
@@ -425,7 +439,7 @@ class AndroidPlatform implements Serializable {
             names.add(AndroidPlatform.getTargetName(version.apiLevel));
         }
 
-        return names.toArray(new String[names.size()]);
+        return names.toArray(new String[0]);
     }
 
     @Override
@@ -437,21 +451,21 @@ class AndroidPlatform implements Serializable {
 
 class ScreenDensity implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private long serialVersionUID = 1L;
 
-    static final ScreenDensity LOW = new ScreenDensity(120, "ldpi");
-    static final ScreenDensity MEDIUM = new ScreenDensity(160, "mdpi");
-    static final ScreenDensity TV_720P = new ScreenDensity(213, "tvdpi");
-    static final ScreenDensity HIGH = new ScreenDensity(240, "hdpi");
-    static final ScreenDensity EXTRA_HIGH = new ScreenDensity(320, "xhdpi");
-    static final ScreenDensity EXTRA_HIGH_400 = new ScreenDensity(400);
-    static final ScreenDensity EXTRA_HIGH_420 = new ScreenDensity(420);
-    static final ScreenDensity EXTRA_EXTRA_HIGH = new ScreenDensity(480, "xxhdpi");
-    static final ScreenDensity EXTRA_EXTRA_HIGH_560 = new ScreenDensity(560);
-    static final ScreenDensity EXTRA_EXTRA_EXTRA_HIGH = new ScreenDensity(640, "xxxhdpi");
-    static final ScreenDensity[] PRESETS = new ScreenDensity[] { LOW, MEDIUM, TV_720P, HIGH,
+    private static ScreenDensity LOW = new ScreenDensity(120, "ldpi");
+    private static ScreenDensity MEDIUM = new ScreenDensity(160, "mdpi");
+    private static ScreenDensity TV_720P = new ScreenDensity(213, "tvdpi");
+    private static ScreenDensity HIGH = new ScreenDensity(240, "hdpi");
+    private static ScreenDensity EXTRA_HIGH = new ScreenDensity(320, "xhdpi");
+    private static ScreenDensity EXTRA_HIGH_400 = new ScreenDensity(400);
+    private static ScreenDensity EXTRA_HIGH_420 = new ScreenDensity(420);
+    private static ScreenDensity EXTRA_EXTRA_HIGH = new ScreenDensity(480, "xxhdpi");
+    private static ScreenDensity EXTRA_EXTRA_HIGH_560 = new ScreenDensity(560);
+    private static ScreenDensity EXTRA_EXTRA_EXTRA_HIGH = new ScreenDensity(640, "xxxhdpi");
+    static ScreenDensity[] PRESETS = new ScreenDensity[]{LOW, MEDIUM, TV_720P, HIGH,
             EXTRA_HIGH, EXTRA_HIGH_400, EXTRA_HIGH_420, EXTRA_EXTRA_HIGH, EXTRA_EXTRA_HIGH_560,
-            EXTRA_EXTRA_EXTRA_HIGH };
+            EXTRA_EXTRA_EXTRA_HIGH};
 
     private final int dpi;
     private final String alias;
@@ -498,27 +512,29 @@ class ScreenDensity implements Serializable {
     @Override
     public String toString() {
         return Integer.toString(dpi);
-    };
+    }
+
+    ;
 
 }
 
 class ScreenResolution implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private long serialVersionUID = 1L;
 
-    static final ScreenResolution QVGA = new ScreenResolution(240, 320, "QVGA", "QVGA");
-    static final ScreenResolution WQVGA = new ScreenResolution(240, 400, "WQVGA", "WQVGA400");
-    static final ScreenResolution FWQVGA = new ScreenResolution(240, 432, "FWQVGA", "WQVGA432");
-    static final ScreenResolution HVGA = new ScreenResolution(320, 480, "HVGA", "HVGA");
-    static final ScreenResolution WVGA = new ScreenResolution(480, 800, "WVGA", "WVGA800");
-    static final ScreenResolution FWVGA = new ScreenResolution(480, 854, "FWVGA", "WVGA854");
-    static final ScreenResolution WSVGA = new ScreenResolution(1024, 654, "WSVGA", "WSVGA");
-    static final ScreenResolution WXGA_720 = new ScreenResolution(1280, 720, "WXGA720", "WXGA720");
-    static final ScreenResolution WXGA_800 = new ScreenResolution(1280, 800, "WXGA800", "WXGA800");
-    static final ScreenResolution WXGA = new ScreenResolution(1280, 800, "WXGA", "WXGA");
-    static final ScreenResolution[] PRESETS = new ScreenResolution[] { QVGA, WQVGA, FWQVGA, HVGA,
-                                                                       WVGA, FWVGA, WSVGA,
-                                                                       WXGA_720, WXGA_800, WXGA };
+    private static ScreenResolution QVGA = new ScreenResolution(240, 320, "QVGA", "QVGA");
+    private static ScreenResolution WQVGA = new ScreenResolution(240, 400, "WQVGA", "WQVGA400");
+    private static ScreenResolution FWQVGA = new ScreenResolution(240, 432, "FWQVGA", "WQVGA432");
+    private static ScreenResolution HVGA = new ScreenResolution(320, 480, "HVGA", "HVGA");
+    private static ScreenResolution WVGA = new ScreenResolution(480, 800, "WVGA", "WVGA800");
+    private static ScreenResolution FWVGA = new ScreenResolution(480, 854, "FWVGA", "WVGA854");
+    private static ScreenResolution WSVGA = new ScreenResolution(1024, 654, "WSVGA", "WSVGA");
+    private static ScreenResolution WXGA_720 = new ScreenResolution(1280, 720, "WXGA720", "WXGA720");
+    private static ScreenResolution WXGA_800 = new ScreenResolution(1280, 800, "WXGA800", "WXGA800");
+    private static ScreenResolution WXGA = new ScreenResolution(1280, 800, "WXGA", "WXGA");
+    static ScreenResolution[] PRESETS = new ScreenResolution[]{QVGA, WQVGA, FWQVGA, HVGA,
+            WVGA, FWVGA, WSVGA,
+            WXGA_720, WXGA_800, WXGA};
 
     private final int width;
     private final int height;
@@ -560,7 +576,7 @@ class ScreenResolution implements Serializable {
         int height = 0;
         try {
             width = Integer.parseInt(resolution.substring(0, index));
-            height = Integer.parseInt(resolution.substring(index+1));
+            height = Integer.parseInt(resolution.substring(index + 1));
         } catch (NumberFormatException ex) {
             return null;
         }
@@ -587,7 +603,7 @@ class ScreenResolution implements Serializable {
     }
 
     public String getDimensionString() {
-        return width +"x"+ height;
+        return width + "x" + height;
     }
 
     @Override
@@ -597,6 +613,8 @@ class ScreenResolution implements Serializable {
         }
 
         return alias;
-    };
+    }
+
+    ;
 
 }

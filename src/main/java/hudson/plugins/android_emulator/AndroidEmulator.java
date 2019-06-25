@@ -27,10 +27,7 @@ import hudson.remoting.Callable;
 import hudson.remoting.VirtualChannel;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
-import hudson.util.ArgumentListBuilder;
-import hudson.util.ForkOutputStream;
-import hudson.util.FormValidation;
-import hudson.util.NullStream;
+import hudson.util.*;
 import jenkins.model.ArtifactManager;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
@@ -42,6 +39,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import java.io.ByteArrayOutputStream;
@@ -57,12 +55,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AndroidEmulator extends BuildWrapper implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Logger LOGGER = Logger.getLogger(AndroidEmulator.class.getName());
 
     /** Duration by which the emulator should start being available via adb. */
     private static final int ADB_CONNECT_TIMEOUT= 60;
@@ -349,8 +351,6 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
         final SdkCliCommand adbStartCmd = SdkCliCommandFactory.getCommandsForSdk(androidSdk).getAdbStartServerCommand();
         Proc adbStart = emu.getToolProcStarter(adbStartCmd).stdout(logger).stderr(logger).start();
         adbStart.joinWithTimeout(5L, TimeUnit.SECONDS, listener);
-        Proc adbStart2 = emu.getToolProcStarter(adbStartCmd).stdout(logger).stderr(logger).start();
-        adbStart2.joinWithTimeout(5L, TimeUnit.SECONDS, listener);
 
         // Show warning about snapshots being enabled, but not supported
         if (useSnapshots && !androidSdk.supportsSnapshots()) {
@@ -529,7 +529,7 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
                 boolean restarted = emu.sendCommand("avd start");
                 if (!restarted) {
                     log(logger, Messages.EMULATOR_RESUME_FAILED());
-                    cleanUp(emuConfig, emu, androidSdk, logWriter, logcatFile, logcatStream, artifactManager, launcher, listener);
+                    cleanUp(emuConfig, emu, androidSdk, logWriter, logcatFile, logcatStream, artifactManager, launcher, listener, build);
                 }
             } else {
                 log(logger, Messages.SNAPSHOT_CREATION_FAILED());
@@ -575,7 +575,7 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
             @SuppressWarnings("rawtypes")
             public boolean tearDown(AbstractBuild build, BuildListener listener)
                     throws IOException, InterruptedException {
-                cleanUp(emuConfig, emu, androidSdk, logWriter, logcatFile, logcatStream, artifactManager, launcher, listener);
+                cleanUp(emuConfig, emu, androidSdk, logWriter, logcatFile, logcatStream, artifactManager, launcher, listener, build);
                 return true;
             }
         };
@@ -599,9 +599,10 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
         if (indent) {
             message = '\t' + message.replace("\n", "\n\t");
         } else if (message.length() > 0) {
-            logger.print("[android] ");
+            logger.print("[android emulator] ");
         }
         logger.println(message);
+        LOGGER.log(Level.ALL, message);
     }
 
     /**
@@ -611,7 +612,7 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
      * @param androidSdk The current android SDK
      */
     private void cleanUp(EmulatorConfig emulatorConfig, AndroidEmulatorContext emu, final AndroidSdk androidSdk) throws IOException, InterruptedException {
-        cleanUp(emulatorConfig, emu, androidSdk, null, null, null, null, null, null);
+        cleanUp(emulatorConfig, emu, androidSdk, null, null, null, null, null, null, null);
     }
 
     /**
@@ -625,22 +626,42 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
      * @param artifactManager The artifact manager. Used to archive the logcatFile.
      * @param launcher a launcher used by artifactManager to archive the logcatFile.
      * @param listener a listener used by artifactManager to archive the logcatFile.
+     * @param build The abstract build to get the workspace
      */
     private void cleanUp(EmulatorConfig emulatorConfig, AndroidEmulatorContext emu, AndroidSdk androidSdk,
                          @Nullable Proc logcatProcess, @Nullable FilePath logcatFile, @Nullable OutputStream logcatStream,
-                         @Nullable ArtifactManager artifactManager, @Nullable Launcher launcher, @Nullable BuildListener listener)
+                         @Nullable ArtifactManager artifactManager, @Nullable Launcher launcher, @Nullable BuildListener listener, @Nullable AbstractBuild build)
            throws IOException, InterruptedException {
+
+        //Stop Gradle Daemon
+        if(build != null && build.getWorkspace() != null) {
+            log(emu.logger(), "Stopping Gradle Daemon");
+            final FilePath workspace = build.getWorkspace();
+            String command = workspace.getRemote() + "\\gradlew.bat" + " --stop";
+            log(emu.logger(), "Executing command: " + command);
+            try {
+                Runtime.getRuntime().exec(command);
+            } catch(Exception e){
+                log(emu.logger(), "Error stopping Gradle Daemon", e);
+                LOGGER.log(Level.ALL,"Error stopping Gradle Daemon", e);
+            }
+        }
 
         // FIXME: Sometimes on Windows neither the emulator.exe nor the adb.exe processes die.
         //        Launcher.kill(EnvVars) does not appear to help either.
         //        This is (a) inconsistent; (b) very annoying.
+        log(emu.logger(), Messages.STOPPING_EMULATOR());
+
+        final SdkCliCommand killEmuCmd = SdkCliCommandFactory.getCommandsForSdk(androidSdk).getAdbKillEmulatorCommand(emu.serial());
+        ArgumentListBuilder adbKillEmuCmd = emu.getToolCommand(killEmuCmd);
+        final int join = emu.getProcStarter(adbKillEmuCmd).join();
 
         // Stop emulator process
-        log(emu.logger(), Messages.STOPPING_EMULATOR());
-        boolean killed = emu.sendCommand("kill");
-
+        //boolean killed = emu.sendCommand("kill");
+        boolean killed = join == 0;
         // Ensure the process is dead
         if (!killed && emu.process().isAlive()) {
+            log(emu.logger(), "Failed to kill emulator. Trying to kill process.");
             // Give up trying to kill it after a few seconds, in case it's deadlocked
             killed = Utils.killProcess(emu.process(), KILL_PROCESS_TIMEOUT_MS);
             if (!killed) {
@@ -659,22 +680,23 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
                     Utils.killProcess(logcatProcess, KILL_PROCESS_TIMEOUT_MS);
                 }
             }
-            try {
-            } catch (Exception ignore) {}
 
             // Archive the logs
-            if (logcatFile.length() != 0 && artifactManager != null && launcher != null && listener != null) {
-                log(emu.logger(), Messages.ARCHIVING_LOG());
-                final FilePath workspace = logcatFile.getParent();
-                final Map<String, String> artifacts = Collections.singletonMap("logcat.txt", logcatFile.getName());
-                artifactManager.archive(workspace, launcher, listener, artifacts);
+            if(logcatFile != null) {
+                if (logcatFile.length() != 0 && artifactManager != null && launcher != null && listener != null) {
+                    log(emu.logger(), Messages.ARCHIVING_LOG());
+                    final FilePath workspace = logcatFile.getParent();
+                    final Map<String, String> artifacts = Collections.singletonMap("logcat.txt", logcatFile.getName());
+                    artifactManager.archive(workspace, launcher, listener, artifacts);
+                }
+                logcatFile.delete();
             }
-            logcatFile.delete();
         }
 
         final SdkCliCommand killCmd = SdkCliCommandFactory.getCommandsForSdk(androidSdk).getAdbKillServerCommand();
         ArgumentListBuilder adbKillCmd = emu.getToolCommand(killCmd);
-        emu.getProcStarter(adbKillCmd).join();
+        final int killResponse = emu.getProcStarter(adbKillCmd).join();
+        log(emu.logger(), String.format("Killed adb: %s", killResponse));
 
         emu.cleanUp();
 
@@ -853,6 +875,7 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
             load();
         }
 
+        @Nonnull
         @Override
         public String getDisplayName() {
             return Messages.JOB_DESCRIPTION();
@@ -877,7 +900,7 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
             String sdCardSize = null;
             String targetAbi = null;
             String deviceDefinition = null;
-            List<HardwareProperty> hardware = new ArrayList<HardwareProperty>();
+            List<HardwareProperty> hardware = new ArrayList<>();
             boolean wipeData = false;
             boolean showWindow = true;
             boolean useSnapshots = true;
@@ -913,10 +936,10 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
 
             try {
                 startupDelay = Integer.parseInt(formData.getString("startupDelay"));
-            } catch (NumberFormatException e) {}
+            } catch (NumberFormatException ignored) {}
             try {
                 startupTimeout = Integer.parseInt(formData.getString("startupTimeout"));
-            } catch (NumberFormatException e) {}
+            } catch (NumberFormatException ignored) {}
             try {
                 adbTimeout = Integer.parseInt(formData.getString("adbTimeout"));
             } catch (NumberFormatException e) {}
@@ -1047,17 +1070,15 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
 
             // Warn about inconsistent WXGA skin names between Android 3.x and 4.x
             AndroidPlatform platform = AndroidPlatform.valueOf(osVersion);
-            if (platform != null) {
-                int sdkLevel = platform.getSdkLevel();
-                if (sdkLevel >= 11 && platform.getSdkLevel() <= 13) {
-                    if (resolution.equals("WXGA720") || resolution.equals("WXGA800")) {
-                        String msg = Messages.SUSPECT_RESOLUTION_ANDROID_3(platform);
-                        return ValidationResult.warning(msg);
-                    }
-                } else if (sdkLevel >= 14 && resolution.equals("WXGA")) {
-                    String msg = Messages.SUSPECT_RESOLUTION_ANDROID_4(platform);
+            int sdkLevel = platform.getSdkLevel();
+            if (sdkLevel >= 11 && platform.getSdkLevel() <= 13) {
+                if (resolution.equals("WXGA720") || resolution.equals("WXGA800")) {
+                    String msg = Messages.SUSPECT_RESOLUTION_ANDROID_3(platform);
                     return ValidationResult.warning(msg);
                 }
+            } else if (sdkLevel >= 14 && resolution.equals("WXGA")) {
+                String msg = Messages.SUSPECT_RESOLUTION_ANDROID_4(platform);
+                return ValidationResult.warning(msg);
             }
 
             return ValidationResult.ok();

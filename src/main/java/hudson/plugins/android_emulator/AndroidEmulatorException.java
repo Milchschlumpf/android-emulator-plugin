@@ -2,11 +2,11 @@ package hudson.plugins.android_emulator;
 
 abstract class AndroidEmulatorException extends Exception {
 
-    protected AndroidEmulatorException(String message) {
+    AndroidEmulatorException(String message) {
         super(message);
     }
 
-    protected AndroidEmulatorException(String message, Throwable cause) {
+    AndroidEmulatorException(String message, Throwable cause) {
         super(message, cause);
     }
 

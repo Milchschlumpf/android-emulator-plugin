@@ -17,7 +17,7 @@ public class SdkToolsCommands17To25_2 extends SdkToolsCommandsCurrentBase implem
 
     @Override
     public SdkCliCommand getSdkInstallAndUpdateCommand(final String proxySettings, final List<String> components) {
-        final List<String> complist = new ArrayList<String>(components);
+        final List<String> complist = new ArrayList<>(components);
         complist.remove("emulator");
 
         final String upgradeArgs = String.format("update sdk -u -a %s -t %s", proxySettings, StringUtils.join(complist, ','));
@@ -45,12 +45,8 @@ public class SdkToolsCommands17To25_2 extends SdkToolsCommandsCurrentBase implem
         // Check whether the desired ABI is included in the output
         Pattern regex = Pattern.compile(String.format("\"%s\".+?%s", platform, abi), Pattern.DOTALL);
         Matcher matcher = regex.matcher(listSystemImagesOutput);
-        if (!matcher.find() || matcher.group(0).contains("---")) {
-            // We did not find the desired ABI within the section for the given platform
-            return false;
-        } else {
-            return true;
-        }
+        // We did not find the desired ABI within the section for the given platform
+        return matcher.find() && !matcher.group(0).contains("---");
     }
 
     @Override

@@ -139,8 +139,6 @@ public class AndroidEmulatorContext {
 	 * @param env Additional environment variables to set
 	 * @return A ready ProcStarter
 	 * 
-	 * @throws IOException
-	 * @throws InterruptedException
 	 */
 	public ProcStarter getProcStarter(final ArgumentListBuilder command, final EnvVars env)
 			throws IOException, InterruptedException {
@@ -171,9 +169,6 @@ public class AndroidEmulatorContext {
 	 * 
 	 * @param command What command to run
 	 * @return A ready ProcStarter
-	 * 
-	 * @throws IOException
-	 * @throws InterruptedException
 	 */
 	public ProcStarter getProcStarter(ArgumentListBuilder command)
 			throws IOException, InterruptedException {
@@ -196,9 +191,6 @@ public class AndroidEmulatorContext {
          * @param sdkCmd The Android tool and any extra arguments for the command to run.
          * @param env Additional environment variables to set
          * @return A ready ProcStarter
-         *
-         * @throws IOException
-         * @throws InterruptedException
          */
         public ProcStarter getToolProcStarter(final SdkCliCommand sdkCmd, final EnvVars env)
                 throws IOException, InterruptedException {
@@ -210,8 +202,6 @@ public class AndroidEmulatorContext {
          *
          * @param sdkCmd The Android tool and any extra arguments for the command to run.
          * @return A ready ProcStarter
-	 * @throws IOException
-	 * @throws InterruptedException
          */
 	public ProcStarter getToolProcStarter(final SdkCliCommand sdkCmd)
 			throws IOException, InterruptedException {

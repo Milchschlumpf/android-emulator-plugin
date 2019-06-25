@@ -27,7 +27,7 @@ public class SdkCliCommand {
         return (tool == null);
     }
 
-    public static SdkCliCommand createNoopCommand() {
+    static SdkCliCommand createNoopCommand() {
         return new SdkCliCommand(null, "");
     }
 }

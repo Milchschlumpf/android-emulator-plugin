@@ -573,7 +573,7 @@ class EmulatorConfig implements Serializable {
             // Just "press" Enter to continue with the selected target's defaults.
             try {
                 int waitCnt = 0;
-                while (Utils.isProcessAlive(process)) {
+                while (process.isAlive()) {
                     final String line = procstdout.readLine();
                     if (line != null && !line.isEmpty()) {
                         AndroidEmulator.log(logger, line, true);
@@ -654,9 +654,7 @@ class EmulatorConfig implements Serializable {
                     procBuilder.environment().put(Constants.ENV_VAR_ANDROID_SDK_HOME, androidSdkHome);
                 }
                 procBuilder.start().waitFor();
-            } catch (InterruptedException ex) {
-                return false;
-            } catch (IOException ex) {
+            } catch (InterruptedException | IOException ex) {
                 return false;
             }
 

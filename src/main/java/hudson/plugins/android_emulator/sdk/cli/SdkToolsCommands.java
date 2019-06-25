@@ -35,6 +35,7 @@ public interface SdkToolsCommands {
 
     SdkCliCommand getAdbStartServerCommand();
     SdkCliCommand getAdbKillServerCommand();
+    SdkCliCommand getAdbKillEmulatorCommand(final String emulatorName);
 
     @Deprecated
     SdkCliCommand getUpdateProjectCommand(final String projectPath);

@@ -27,8 +27,6 @@ import hudson.util.VersionNumber;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +37,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +64,11 @@ public class Utils {
      * @return The configured Android SDK root, if any. May include un-expanded variables.
      */
     public static String getConfiguredAndroidHome() {
-        DescriptorImpl descriptor = Jenkins.getInstance().getDescriptorByType(DescriptorImpl.class);
+        final Jenkins jenkins = Jenkins.getInstanceOrNull();
+        if(jenkins == null){
+            throw new IllegalStateException("Jenkins not available.");
+        }
+        DescriptorImpl descriptor = jenkins.getDescriptorByType(DescriptorImpl.class);
         if (descriptor != null) {
             return descriptor.androidHome;
         }
@@ -85,14 +86,16 @@ public class Utils {
         final EnvVars envVars = new EnvVars();
         try {
             // Get environment of the local computer
-            EnvVars localVars = Computer.currentComputer().getEnvironment();
+            final Computer computer = Computer.currentComputer();
+            if(computer == null){
+                throw new IllegalStateException("Computer not available.");
+            }
+            EnvVars localVars = computer.getEnvironment();
             envVars.putAll(localVars);
 
             // Add variables specific to this build
             envVars.putAll(build.getEnvironment(listener));
-        } catch (InterruptedException e) {
-            // Ignore
-        } catch (IOException e) {
+        } catch (InterruptedException | IOException e) {
             // Ignore
         }
 
@@ -174,7 +177,7 @@ public class Utils {
                         // Create SDK instance with what we know so far
                         return new AndroidSdk(potentialSdkDir, androidSdkHome);
                     } else {
-                        determinationLog.append("['" + potentialSdkDir + "']: " + result.getMessage() + "\n");
+                        determinationLog.append("['").append(potentialSdkDir).append("']: ").append(result.getMessage()).append("\n");
                     }
                 }
 
@@ -185,7 +188,7 @@ public class Utils {
             }
 
             private List<String> getPotentialSdkDirs() {
-                final List<String> potentialSdkDirs = new ArrayList<String>();
+                final List<String> potentialSdkDirs = new ArrayList<>();
 
                 // Add global config path first
                 potentialSdkDirs.add(androidSdkRootPreferred);
@@ -226,10 +229,7 @@ public class Utils {
         final PrintStream logger = listener.getLogger();
         try {
             return launcher.getChannel().call(task);
-        } catch (IOException e) {
-            // Ignore, log only
-            log(logger, ExceptionUtils.getFullStackTrace(e));
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             // Ignore, log only
             log(logger, ExceptionUtils.getFullStackTrace(e));
         }
@@ -313,7 +313,8 @@ public class Utils {
     public static ValidationResult validateAndroidHome(final File sdkRoot, final boolean allowLegacy, final boolean fromWebConfig) {
 
         // This can be used to check the existence of a file on the server, so needs to be protected
-        if (fromWebConfig && !Jenkins.getInstance().hasPermission(Hudson.ADMINISTER)) {
+        final Jenkins jenkins = Jenkins.getInstanceOrNull();
+        if (fromWebConfig && jenkins != null && !jenkins.hasPermission(Hudson.ADMINISTER)) {
             return ValidationResult.ok();
         }
 
@@ -329,10 +330,7 @@ public class Utils {
         }
 
         // Ensure that this at least looks like an SDK directory
-        if (
-                !areAllSubdirectoriesExistant(sdkRoot, ToolLocator.SDK_DIRECTORIES)
-                && !(allowLegacy && areAllSubdirectoriesExistant(sdkRoot, ToolLocator.SDK_DIRECTORIES_LEGACY))
-                ) {
+        if ( !areAllSubdirectoriesExistant(sdkRoot, ToolLocator.SDK_DIRECTORIES) && !(allowLegacy && areAllSubdirectoriesExistant(sdkRoot, ToolLocator.SDK_DIRECTORIES_LEGACY))) {
             return ValidationResult.error(Messages.INVALID_SDK_DIRECTORY());
         }
 
@@ -387,7 +385,7 @@ public class Utils {
      */
     public static File getHomeDirectory() {
         // From https://android.googlesource.com/platform/external/qemu/android/base/system/System.cpp
-        String path = null;
+        String path;
         if (Functions.isWindows()) {
             // The emulator queries for the Win32 "CSIDL_PROFILE" path, which should equal USERPROFILE
             path = System.getenv(Constants.ENV_VAR_SYSTEM_USERPROFILE);
@@ -415,13 +413,13 @@ public class Utils {
      * Retrieves a list of directories from the PATH-Environment-Variable, which could be an SDK installation.
      * Currently it is only checked, if the path points to an 'tools'-directory.
      *
-     * @param envVar the environment variables currently set for the node
+     * @param envVars the environment variables currently set for the node
      * @return A list of possible root directories of an Android SDK
      */
     private static List<String> getPossibleSdkRootDirectoriesFromPath(final EnvVars envVars) {
         // Get list of directories from the PATH environment variable
-        List<String> paths = Arrays.asList(envVars.get(Constants.ENV_VAR_SYSTEM_PATH).split(File.pathSeparator));
-        final List<String> possibleSdkRootsFromPath = new ArrayList<String>();
+        String[] paths = envVars.get(Constants.ENV_VAR_SYSTEM_PATH).split(File.pathSeparator);
+        final List<String> possibleSdkRootsFromPath = new ArrayList<>();
 
         // Examine each directory to see whether it contains the expected Android tools
         for (String path : paths) {
@@ -438,7 +436,7 @@ public class Utils {
      *
      * @return Path within the tools folder where the SDK should live.
      */
-    public static final FilePath getSdkInstallDirectory(Node node) {
+    public static FilePath getSdkInstallDirectory(Node node) {
         if (node == null) {
             throw new IllegalArgumentException("Node is null");
         }
@@ -543,7 +541,7 @@ public class Utils {
         }
 
         if (env != null) {
-            procStarter = procStarter.envs(env);
+            procStarter.envs(env);
         }
 
         if (workingDirectory != null) {
@@ -573,13 +571,15 @@ public class Utils {
         Map<String, String> buildVars;
 
         try {
-            EnvVars localVars = Computer.currentComputer().getEnvironment();
+            final Computer computer = Computer.currentComputer();
+            if(computer == null){
+                throw new IllegalStateException("Computer not available");
+            }
+            EnvVars localVars = computer.getEnvironment();
             envVars = new EnvVars(localVars);
             envVars.putAll(build.getEnvironment(listener));
             buildVars = build.getBuildVariables();
-        } catch (IOException e) {
-            return null;
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             return null;
         }
 
@@ -597,7 +597,7 @@ public class Utils {
      */
     public static String expandVariables(EnvVars envVars, Map<String,String> buildVars,
             String token) {
-        final Map<String,String> vars = new HashMap<String,String>(envVars);
+        final Map<String,String> vars = new HashMap<>(envVars);
         if (buildVars != null) {
             // Build-specific variables, if any, take priority over environment variables
             vars.putAll(buildVars);
@@ -622,19 +622,15 @@ public class Utils {
         FutureTask<Boolean> task = null;
         try {
             // Attempt to kill the process; remoting will be handled by the process object
-            task = new FutureTask<Boolean>(new java.util.concurrent.Callable<Boolean>() {
-                public Boolean call() throws Exception {
-                    process.kill();
-                    return true;
-                }
+            task = new FutureTask<>(() -> {
+                process.kill();
+                return true;
             });
 
             // Execute the task asynchronously and wait for a result or timeout
             Executors.newSingleThreadExecutor().execute(task);
             result = task.get(timeoutMs, TimeUnit.MILLISECONDS);
-        } catch (TimeoutException ex) {
-        } catch (InterruptedException ex) {
-        } catch (ExecutionException ex) {
+        } catch (TimeoutException | InterruptedException |ExecutionException ex) {
             // Ignore
         } finally {
             if (task != null && !task.isDone()) {
@@ -773,7 +769,7 @@ public class Utils {
      * @param to Path to reach.
      * @return The relative distance between the two, or {@code -1} for invalid input.
      */
-    public static int getRelativePathDistance(String from, String to) {
+    public static int getRelativePathDistance(final String from, final String to) {
         final String relative = getRelativePath(from, to);
         if (relative == null) {
             return -1;
@@ -806,8 +802,8 @@ public class Utils {
      */
     private static int getNumberOfNonEmptyEntries(final String[] array) {
         int length = 0;
-        for (int idx = 0; idx < array.length; idx++) {
-            if (!array[idx].isEmpty()) {
+        for (final String s : array) {
+            if (!s.isEmpty()) {
                 length++;
             }
         }
@@ -843,14 +839,13 @@ public class Utils {
         String result = null;
         String currentMaxVersion = "0";
 
-        final String lines[] = multiLine.split("(\r\n|\r|\n)");
-        for (int pos = 0; pos < lines.length; pos++) {
-            final String line = lines[pos];
-            final String patternAndVersionRegex = "(" + pattern + "[-;][0-9\\.]+)";
+        final String[] lines = multiLine.split("(\r\n|\r|\n)");
+        for (final String line : lines) {
+            final String patternAndVersionRegex = "(" + pattern + "[-;][0-9.]+)";
             final Matcher m = Pattern.compile(patternAndVersionRegex).matcher(line);
             if (m.find()) {
                 final String patternAndVersion = m.group(0);
-                final String lineVersion = patternAndVersion.replaceAll("^(.*?)([0-9\\.]*)$", "$2");
+                final String lineVersion = patternAndVersion.replaceAll("^(.*?)([0-9.]*)$", "$2");
                 if (isVersionOlderThan(currentMaxVersion, lineVersion)) {
                     result = patternAndVersion;
                     currentMaxVersion = lineVersion;
@@ -900,23 +895,14 @@ public class Utils {
         private final int port;
         private final String command;
 
-        @SuppressWarnings("hiding")
         EmulatorCommandTask(int port, String command) {
             this.port = port;
             this.command = command;
         }
 
-        @SuppressWarnings("null")
-        @SuppressFBWarnings({"DM_DEFAULT_ENCODING", "RV_DONT_JUST_NULL_CHECK_READLINE"})
         public Boolean call() throws IOException {
-            Socket socket = null;
-            BufferedReader in = null;
-            PrintWriter out = null;
-            try {
-                // Connect to the emulator's console port
-                socket = new Socket("127.0.0.1", port);
-                out = new PrintWriter(socket.getOutputStream());
-                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            // Connect to the emulator's console port
+            try(Socket socket = new Socket("127.0.0.1", port);PrintWriter out = new PrintWriter(socket.getOutputStream());BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 
                 // If we didn't get a banner response, give up
                 if (in.readLine() == null) {
@@ -931,19 +917,10 @@ public class Utils {
                 out.flush();
 
                 // Wait for the commands to return a response
+                //noinspection StatementWithEmptyBody
                 while (in.readLine() != null) {
                     // Ignore
                 }
-            } finally {
-                try {
-                    out.close();
-                } catch (Exception ignore) {}
-                try {
-                    in.close();
-                } catch (Exception ignore) {}
-                try {
-                    socket.close();
-                } catch (Exception ignore) {}
             }
 
             return true;
@@ -952,20 +929,4 @@ public class Utils {
         private static final long serialVersionUID = 1L;
     }
 
-    /**
-     * Checks if java.lang.Process is still alive. Native isAlive method
-     * exists since Java 8 API.
-     *
-     * @param process Process to check
-     * @return true if process is alive, false if process has exited
-     */
-    public static boolean isProcessAlive(final Process process) {
-        boolean exited = false;
-        try {
-            process.exitValue();
-            exited = true;
-        } catch (IllegalThreadStateException ex) {
-        }
-        return !exited;
-    }
 }

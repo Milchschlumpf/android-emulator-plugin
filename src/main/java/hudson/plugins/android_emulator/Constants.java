@@ -102,36 +102,25 @@ public interface Constants {
     String ENV_VAR_ANDROID_AVD_RESOLUTION = "ANDROID_AVD_RESOLUTION";
     String ENV_VAR_ANDROID_AVD_SKIN = "ANDROID_AVD_SKIN";
     // Environment variable set by the plugin to specify the telnet interface port.
-    static final String ENV_VAR_ANDROID_AVD_USER_PORT = "ANDROID_AVD_USER_PORT";
-    /**
-     * @deprecated Use {@link #ENV_VAR_ANDROID_SDK_ROOT} instead if this.
-     */
-    @Deprecated
-    static final String ENV_VAR_ANDROID_HOME = "ANDROID_HOME";
-    static final String ENV_VAR_ANDROID_SDK = "ANDROID_SDK";
-    static final String ENV_VAR_ANDROID_SDK_HOME = "ANDROID_SDK_HOME";
-    /**
-     * Sets the path to the SDK installation directory. Once set, the value does
-     * not typically change, and can be shared by multiple users on the same
-     * machine.
-     * <p>
-     * Example: C:\AndroidSDK or ~/android-sdk/
-     */
-    static final String ENV_VAR_ANDROID_SDK_ROOT = "ANDROID_SDK_ROOT";
-    static final String ENV_VAR_ANDROID_SERIAL = "ANDROID_SERIAL";
-    static final String ENV_VAR_ANDROID_TMP_LOGCAT_FILE = "ANDROID_TMP_LOGCAT_FILE";
-    static final String ENV_VAR_ANDROID_USE_SDK_WRAPPER = "USE_SDK_WRAPPER";
-    static final String ENV_VAR_JENKINS_ANDROID_HOME = "JENKINS_ANDROID_HOME";
-    static final String ENV_VAR_JENKINS_WORKSPACE = "WORKSPACE";
-    static final String ENV_VAR_LD_LIBRARY_PATH = "LD_LIBRARY_PATH";
-    static final String ENV_VAR_SYSTEM_HOME = "HOME";
-    static final String ENV_VAR_SYSTEM_HOMEDRIVE = "HOMEDRIVE";
-    static final String ENV_VAR_SYSTEM_HOMEPATH = "HOMEPATH";
-    static final String ENV_VAR_SYSTEM_PATH = "PATH";
-    static final String ENV_VAR_SYSTEM_USERPROFILE = "USERPROFILE";
-    static final String ENV_VAR_PATH_SDK_PLATFORM_TOOLS = "PATH+SDK_PLATFORM_TOOLS";
-    static final String ENV_VAR_PATH_SDK_TOOLS = "PATH+SDK_TOOLS";
-    static final String ENV_VAR_QEMU_AUDIO_DRV = "QEMU_AUDIO_DRV";
+    String ENV_VAR_ANDROID_AVD_USER_PORT = "ANDROID_AVD_USER_PORT";
+    String ENV_VAR_ANDROID_HOME = "ANDROID_HOME";
+    String ENV_VAR_ANDROID_SDK = "ANDROID_SDK";
+    String ENV_VAR_ANDROID_SDK_HOME = "ANDROID_SDK_HOME";
+    String ENV_VAR_ANDROID_SDK_ROOT = "ANDROID_SDK_ROOT";
+    String ENV_VAR_ANDROID_SERIAL = "ANDROID_SERIAL";
+    String ENV_VAR_ANDROID_TMP_LOGCAT_FILE = "ANDROID_TMP_LOGCAT_FILE";
+    String ENV_VAR_ANDROID_USE_SDK_WRAPPER = "USE_SDK_WRAPPER";
+    String ENV_VAR_JENKINS_ANDROID_HOME = "JENKINS_ANDROID_HOME";
+    String ENV_VAR_JENKINS_WORKSPACE = "WORKSPACE";
+    String ENV_VAR_LD_LIBRARY_PATH = "LD_LIBRARY_PATH";
+    String ENV_VAR_SYSTEM_HOME = "HOME";
+    String ENV_VAR_SYSTEM_HOMEDRIVE = "HOMEDRIVE";
+    String ENV_VAR_SYSTEM_HOMEPATH = "HOMEPATH";
+    String ENV_VAR_SYSTEM_PATH = "PATH";
+    String ENV_VAR_SYSTEM_USERPROFILE = "USERPROFILE";
+    String ENV_VAR_PATH_SDK_PLATFORM_TOOLS = "PATH+SDK_PLATFORM_TOOLS";
+    String ENV_VAR_PATH_SDK_TOOLS = "PATH+SDK_TOOLS";
+    String ENV_VAR_QEMU_AUDIO_DRV = "QEMU_AUDIO_DRV";
 
     String ENV_VALUE_QEMU_AUDIO_DRV_NONE = "none";
 }

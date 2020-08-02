@@ -219,27 +219,15 @@ public class SdkInstaller {
 
         // Run the command and accept any licence requests during installation
         Proc proc = procStarter.start();
-        try (InputStream stdout = proc.getStdout(); OutputStream stdin = proc.getStdin()) {
-            if (stdout == null) {
-                return;
-            }
-            BufferedReader r = new BufferedReader(new InputStreamReader(stdout));
-            try {
-                String line;
-                while (proc.isAlive() && (line = r.readLine()) != null) {
-                    logger.println(line);
-                    if (line.toLowerCase(Locale.ENGLISH).startsWith("license id: ") ||
-                            line.toLowerCase(Locale.ENGLISH).startsWith("license android-sdk")) {
-                        if (stdin != null) {
-                            stdin.write("y\r\n".getBytes());
-                            stdin.flush();
-                        } else {
-                            throw new IllegalStateException("Can not accept license");
-                        }
-                    }
+        try(BufferedReader r = new BufferedReader(new InputStreamReader(proc.getStdout()))) {
+            String line;
+            while (proc.isAlive() && (line = r.readLine()) != null) {
+                logger.println(line);
+                if (line.toLowerCase(Locale.ENGLISH).startsWith("license id: ") ||
+                        line.toLowerCase(Locale.ENGLISH).startsWith("license android-sdk")) {
+                    proc.getStdin().write("y\r\n".getBytes());
+                    proc.getStdin().flush();
                 }
-            } finally {
-                r.close();
             }
         }
     }

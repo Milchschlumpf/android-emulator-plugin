@@ -942,7 +942,7 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
             } catch (NumberFormatException ignored) {}
             try {
                 adbTimeout = Integer.parseInt(formData.getString("adbTimeout"));
-            } catch (NumberFormatException e) {}
+            } catch (NumberFormatException ignored) {}
 
             AndroidEmulator androidEmulator = new AndroidEmulator(avdName, osVersion, screenDensity, screenResolution,
                     deviceLocale, sdCardSize, hardware.toArray(new HardwareProperty[0]), wipeData,

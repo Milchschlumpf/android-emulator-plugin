@@ -53,6 +53,31 @@ import hudson.remoting.Future;
 import hudson.remoting.VirtualChannel;
 import hudson.util.ArgumentListBuilder;
 import hudson.util.VersionNumber;
+
+import org.apache.commons.lang.exception.ExceptionUtils;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import jenkins.model.Jenkins;
 import jenkins.security.MasterToSlaveCallable;
 
@@ -964,23 +989,6 @@ public class Utils {
         }
 
         private static final long serialVersionUID = 1L;
-    }
-
-    /**
-     * Checks if java.lang.Process is still alive. Native isAlive method
-     * exists since Java 8 API.
-     *
-     * @param process Process to check
-     * @return true if process is alive, false if process has exited
-     */
-    public static boolean isProcessAlive(final Process process) {
-        boolean exited = false;
-        try {
-            process.exitValue();
-            exited = true;
-        } catch (IllegalThreadStateException ex) {
-        }
-        return !exited;
     }
 
 }

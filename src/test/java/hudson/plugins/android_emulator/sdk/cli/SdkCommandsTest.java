@@ -16,37 +16,37 @@ public class SdkCommandsTest {
 
     @Test
     public void testInstallAndUpdateCommand() {
-        assertUpgradeParamsToAllToolVersions("platform-tools", "platform-tool");
-        assertUpgradeParamsToAllToolVersions("platform-tools", "platform-tools");
+        assertUpgradeParamsToAllToolVersions("platform-tool");
+        assertUpgradeParamsToAllToolVersions( "platform-tools");
 
-        assertUpgradeParamsToAllToolVersions("tools", "tool");
-        assertUpgradeParamsToAllToolVersions("tools", "tools");
+        assertUpgradeParamsToAllToolVersions("tool");
+        assertUpgradeParamsToAllToolVersions("tools");
 
-        assertUpgradeParamsToAllToolVersions("add-ons;addon-google_apis-google-17", "addon-google_apis-google-17");
-        assertUpgradeParamsToAllToolVersions("add-ons;addon-google_apis-google-17", "add-ons;addon-google_apis-google-17");
+        assertUpgradeParamsToAllToolVersions( "addon-google_apis-google-17");
+        assertUpgradeParamsToAllToolVersions( "add-ons;addon-google_apis-google-17");
 
-        assertUpgradeParamsToAllToolVersions("add-ons;addon-google_gdk-google-19", "addon-google_gdk-google-19");
-        assertUpgradeParamsToAllToolVersions("add-ons;addon-google_gdk-google-19", "add-ons;addon-google_gdk-google-19");
+        assertUpgradeParamsToAllToolVersions( "addon-google_gdk-google-19");
+        assertUpgradeParamsToAllToolVersions( "add-ons;addon-google_gdk-google-19");
 
-        assertUpgradeParamsToAllToolVersions("build-tools;26.0.1", "build-tools-26.0.1");
-        assertUpgradeParamsToAllToolVersions("build-tools;26.0.1", "build-tools;26.0.1");
+        assertUpgradeParamsToAllToolVersions("build-tools-26.0.1");
+        assertUpgradeParamsToAllToolVersions( "build-tools;26.0.1");
 
-        assertUpgradeParamsToAllToolVersions("platforms;android-22", "android-22");
-        assertUpgradeParamsToAllToolVersions("platforms;android-22", "platforms;android-22");
+        assertUpgradeParamsToAllToolVersions( "android-22");
+        assertUpgradeParamsToAllToolVersions( "platforms;android-22");
 
-        assertUpgradeParamsToAllToolVersions("extras;android;m2repository", "extra-android-m2repository");
-        assertUpgradeParamsToAllToolVersions("extras;android;m2repository", "extras;android;m2repository");
+        assertUpgradeParamsToAllToolVersions("extra-android-m2repository");
+        assertUpgradeParamsToAllToolVersions( "extras;android;m2repository");
 
-        assertUpgradeParamsToAllToolVersions("extras;google;auto", "extra-google-auto");
-        assertUpgradeParamsToAllToolVersions("extras;google;auto", "extras;google;auto");
+        assertUpgradeParamsToAllToolVersions( "extra-google-auto");
+        assertUpgradeParamsToAllToolVersions( "extras;google;auto");
 
-        assertUpgradeParamsToAllToolVersions("extras;google;m2repository", "extra-google-m2repository");
-        assertUpgradeParamsToAllToolVersions("extras;google;m2repository", "extras;google;m2repository");
+        assertUpgradeParamsToAllToolVersions( "extra-google-m2repository");
+        assertUpgradeParamsToAllToolVersions( "extras;google;m2repository");
 
-        assertUpgradeParamsToAllToolVersions("system-images;android-24;default;x86_64", "sys-img-x86_64-android-24");
-        assertUpgradeParamsToAllToolVersions("system-images;android-26;google_apis;x86_64", "sys-img-x86_64-google_apis-26");
-        assertUpgradeParamsToAllToolVersions("system-images;android-26;test;x86_64", "sys-img-x86_64-test-26");
-        assertUpgradeParamsToAllToolVersions("system-images;android-24;default;x86_64", "system-images;android-24;default;x86_64");
+        assertUpgradeParamsToAllToolVersions( "sys-img-x86_64-android-24");
+        assertUpgradeParamsToAllToolVersions( "sys-img-x86_64-google_apis-26");
+        assertUpgradeParamsToAllToolVersions( "sys-img-x86_64-test-26");
+        assertUpgradeParamsToAllToolVersions( "system-images;android-24;default;x86_64");
 
         final List<String> input = new ArrayList<>();
         input.add("tool");
@@ -54,8 +54,7 @@ public class SdkCommandsTest {
         input.add("extra-google-m2repository");
         input.add("emulator");
         assertUpgradeParamsToAllToolVersions(
-                "tools extras;android;m2repository extras;google;m2repository emulator",
-                "tool,extra-android-m2repository,extra-google-m2repository",
+               "tool,extra-android-m2repository,extra-google-m2repository",
                 input);
 
         input.clear();
@@ -65,18 +64,17 @@ public class SdkCommandsTest {
         input.add("emulator");
         input.add("extra-google-m2repository");
         assertUpgradeParamsToAllToolVersions(
-                "platform-tools tools extras;android;m2repository emulator extras;google;m2repository",
                 "platform-tool,tool,extra-android-m2repository,extra-google-m2repository",
                 input);
     }
 
-    private void assertUpgradeParamsToAllToolVersions(final String expected, final String input) {
+    private void assertUpgradeParamsToAllToolVersions(final String input) {
         final List<String> components = new ArrayList<>();
         components.add(input);
-        assertUpgradeParamsToAllToolVersions(expected, input, components);
+        assertUpgradeParamsToAllToolVersions(input, components);
     }
 
-    private void assertUpgradeParamsToAllToolVersions(final String expected, final String exptecedLegacy, final List<String> input) {
+    private void assertUpgradeParamsToAllToolVersions(final String exptecedLegacy, final List<String> input) {
         final SdkCliCommand installCmdV25_3 = SdkCliCommandFactory.getCommandsForSdk("25.3").getSdkInstallAndUpdateCommand("", input);
         final SdkCliCommand installCmdV25 = SdkCliCommandFactory.getCommandsForSdk("25").getSdkInstallAndUpdateCommand("", input);
         final SdkCliCommand installCmdV17 = SdkCliCommandFactory.getCommandsForSdk("17").getSdkInstallAndUpdateCommand("", input);
@@ -148,7 +146,7 @@ public class SdkCommandsTest {
 
     @Test
     public void testIsImageForPlatformAndABIInstalledParser() throws Exception {
-        String listOutput = null;
+        String listOutput;
         try (InputStream is = getClass().getResourceAsStream("sdkmanager-list.out")) {
             listOutput = StringUtils.join(IOUtils.readLines(is), "\n");
         }

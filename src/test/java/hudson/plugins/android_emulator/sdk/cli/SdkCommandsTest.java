@@ -1,10 +1,5 @@
 package hudson.plugins.android_emulator.sdk.cli;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +9,8 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import hudson.plugins.android_emulator.sdk.Tool;
+
+import static org.junit.Assert.*;
 
 public class SdkCommandsTest {
 

@@ -108,6 +108,9 @@
           <f:entry title="${%Emulator options}" field="commandLineOptions" description="${%Will be given when starting the Android &lt;tt>emulator&lt;/tt> executable}">
             <f:textbox />
           </f:entry>
+          <f:entry title="${%Screenshot directory}" field="screenshotDirectory" description="${%Directory for Screenshots on AVD}">
+            <f:textbox />
+          </f:entry>
           <f:entry title="${%Emulator executable}" field="executable">
               <f:editableComboBox items="${descriptor.executables}" checkUrl="'descriptorByName/AndroidEmulator/checkExecutable?value='+escape(this.value)" />
           </f:entry>

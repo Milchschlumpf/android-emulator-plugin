@@ -156,6 +156,11 @@ public class SdkToolsCommandsCurrentBase implements SdkToolsCommands {
     }
 
     @Override
+    public SdkCliCommand getAdbPullCommand(final String from, final String to) {
+        return new SdkCliCommand(Tool.ADB, "pull " + from + " " + to);
+    }
+
+    @Override
     public SdkCliCommand getAdbKillEmulatorCommand(final String emulatorName) {
         return new SdkCliCommand(Tool.ADB, String.format("-s %s emu kill", emulatorName));
     }

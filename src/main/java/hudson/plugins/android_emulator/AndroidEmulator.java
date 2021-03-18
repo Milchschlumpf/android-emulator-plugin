@@ -32,6 +32,7 @@ import jenkins.model.ArtifactManager;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
@@ -97,22 +98,27 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
     @Exported public final boolean useSnapshots;
 
     // Advanced properties
-    @Exported public final boolean deleteAfterBuild;
-    @Exported public final int startupDelay;
-    @Exported public final int startupTimeout;
-    @Exported public final String commandLineOptions;
-    @Exported public final String executable;
+    @Exported
+    public final boolean deleteAfterBuild;
+    @Exported
+    public final int startupDelay;
+    @Exported
+    public final int startupTimeout;
+    @Exported
+    public final String commandLineOptions;
+    @Exported
+    public final String screenshotDirectory;
+    @Exported
+    public final String executable;
     private int adbTimeout;
 
 
     @DataBoundConstructor
     @SuppressFBWarnings("EI_EXPOSE_REP2")
-    public AndroidEmulator(String avdName, String osVersion, String screenDensity,
-            String screenResolution, String deviceLocale, String sdCardSize,
-            HardwareProperty[] hardwareProperties, boolean wipeData, boolean showWindow,
-            boolean useSnapshots, boolean deleteAfterBuild, int startupDelay, int startupTimeout,
-            String commandLineOptions, String targetAbi, String deviceDefinition,
-            String executable, String avdNameSuffix) {
+    public AndroidEmulator(final String avdName, final String osVersion, final String screenDensity, final String screenResolution, final String deviceLocale, final String sdCardSize,
+                           final HardwareProperty[] hardwareProperties, final boolean wipeData, final boolean showWindow, final boolean useSnapshots, final boolean deleteAfterBuild,
+                           final int startupDelay, final int startupTimeout, final String commandLineOptions, final String screenshotDirectory, final String targetAbi,
+                           final String deviceDefinition, final String executable, final String avdNameSuffix) {
         this.avdName = avdName;
         this.osVersion = osVersion;
         this.screenDensity = screenDensity;
@@ -128,6 +134,7 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
         this.startupDelay = Math.abs(startupDelay);
         this.startupTimeout = Math.abs(startupTimeout);
         this.commandLineOptions = commandLineOptions;
+        this.screenshotDirectory = screenshotDirectory;
         this.targetAbi = targetAbi;
         this.deviceDefinition = deviceDefinition;
         this.avdNameSuffix = avdNameSuffix;
@@ -237,9 +244,9 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
         // Build emulator config, ensuring that variables expand to valid SDK values
         EmulatorConfig emuConfig;
         boolean shouldKeepInWorkspace = descriptor.shouldKeepInWorkspace && Util.fixEmptyAndTrim(avdName) == null;
-        final String androidSdkHome = (envVars != null && shouldKeepInWorkspace
+        final String androidSdkHome = shouldKeepInWorkspace
                 ? envVars.get(Constants.ENV_VAR_JENKINS_WORKSPACE)
-                : envVars.containsKey(Constants.ENV_VAR_ANDROID_SDK_HOME) ? envVars.get(Constants.ENV_VAR_ANDROID_SDK_HOME) : System.getProperty("user.home"));
+                : envVars.containsKey(Constants.ENV_VAR_ANDROID_SDK_HOME) ? envVars.get(Constants.ENV_VAR_ANDROID_SDK_HOME) : System.getProperty("user.home");
         try {
             emuConfig = EmulatorConfig.create(avdName, osVersion, screenDensity,
                 screenResolution, deviceLocale, sdCardSize, wipeData, showWindow, useSnapshots,
@@ -272,7 +279,7 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
             if (!sdkFound) {
                 log(logger, Messages.INSTALLING_SDK());
             } else {
-                final String currentVersion = (androidSdk != null) ? androidSdk.getSdkToolsVersion() : "UNKNOWN";
+                final String currentVersion = androidSdk.getSdkToolsVersion();
                 log(logger, Messages.SDK_INSTALL_UPDATE_TOOLS(currentVersion, "build " + Constants.SDK_TOOLS_DEFAULT_BUILD_ID));
             }
 
@@ -341,7 +348,7 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
         final int delaySecs = startupDelay;
         if (delaySecs > 0) {
             log(logger, Messages.DELAYING_START_UP(delaySecs));
-            Thread.sleep(delaySecs * 1000);
+            Thread.sleep(delaySecs * 1000L);
         }
 
         final AndroidEmulatorContext emu = new AndroidEmulatorContext(build, launcher, listener, androidSdk);
@@ -572,7 +579,6 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
             }
 
             @Override
-            @SuppressWarnings("rawtypes")
             public boolean tearDown(AbstractBuild build, BuildListener listener)
                     throws IOException, InterruptedException {
                 cleanUp(emuConfig, emu, androidSdk, logWriter, logcatFile, logcatStream, artifactManager, launcher, listener, build);
@@ -632,6 +638,10 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
                          @Nullable Proc logcatProcess, @Nullable FilePath logcatFile, @Nullable OutputStream logcatStream,
                          @Nullable ArtifactManager artifactManager, @Nullable Launcher launcher, @Nullable BuildListener listener, @Nullable AbstractBuild build)
            throws IOException, InterruptedException {
+
+        if(build != null && build.getWorkspace() != null) {
+            saveScreenshots(androidSdk, emu, build.getWorkspace());
+        }
 
         //Stop Gradle Daemon
         if(build != null && build.getWorkspace() != null) {
@@ -712,6 +722,22 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
                 channel.call(deletionTask);
             } catch (Exception ex) {
                 log(emu.logger(), Messages.FAILED_TO_DELETE_AVD(ex.getLocalizedMessage()));
+            }
+        }
+    }
+
+    private void saveScreenshots(final AndroidSdk androidSdk, final AndroidEmulatorContext emu, FilePath workspace) {
+        if(StringUtils.isNotEmpty(screenshotDirectory) ) {
+            log(emu.logger(), "Saving Screenshots2");
+            //adb pull /data/user/0/de.getshredded.gsandroid.debug/app_imageDir /Users/test/
+            final SdkCliCommand killCmd = SdkCliCommandFactory.getCommandsForSdk(androidSdk).getAdbPullCommand(screenshotDirectory, workspace.getRemote() + "/screenshots/");
+            ArgumentListBuilder adbKillCmd = emu.getToolCommand(killCmd);
+            try {
+                final int adbPulledCommand = emu.getProcStarter(adbKillCmd).join();
+                log(emu.logger(), "Screenshot Command succesfull: " + adbPulledCommand);
+            } catch (Exception e) {
+                log(emu.logger(), "Error Saving Screenshots", e);
+                LOGGER.log(Level.ALL, "Error Saving Screenshots", e);
             }
         }
     }
@@ -901,15 +927,9 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
             String targetAbi = null;
             String deviceDefinition = null;
             List<HardwareProperty> hardware = new ArrayList<>();
-            boolean wipeData = false;
-            boolean showWindow = true;
-            boolean useSnapshots = true;
-            boolean deleteAfterBuild = false;
             int startupDelay = 0;
             int startupTimeout = 0;
             int adbTimeout = ADB_CONNECT_TIMEOUT;
-            String commandLineOptions = null;
-            String executable = null;
             String avdNameSuffix = null;
 
             JSONObject emulatorData = formData.getJSONObject("useNamed");
@@ -927,12 +947,13 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
                 deviceDefinition = Util.fixEmptyAndTrim(emulatorData.getString("deviceDefinition"));
                 avdNameSuffix = Util.fixEmptyAndTrim(emulatorData.getString("avdNameSuffix"));
             }
-            wipeData = formData.getBoolean("wipeData");
-            showWindow = formData.getBoolean("showWindow");
-            useSnapshots = formData.getBoolean("useSnapshots");
-            deleteAfterBuild = formData.getBoolean("deleteAfterBuild");
-            commandLineOptions = formData.getString("commandLineOptions");
-            executable = formData.getString("executable");
+            boolean wipeData = formData.getBoolean("wipeData");
+            boolean showWindow = formData.getBoolean("showWindow");
+            boolean useSnapshots = formData.getBoolean("useSnapshots");
+            boolean deleteAfterBuild = formData.getBoolean("deleteAfterBuild");
+            String commandLineOptions = formData.getString("commandLineOptions");
+            String screenshotDirectory = formData.getString("screenshotDirectory");
+            String executable = formData.getString("executable");
 
             try {
                 startupDelay = Integer.parseInt(formData.getString("startupDelay"));
@@ -947,7 +968,7 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
             AndroidEmulator androidEmulator = new AndroidEmulator(avdName, osVersion, screenDensity, screenResolution,
                     deviceLocale, sdCardSize, hardware.toArray(new HardwareProperty[0]), wipeData,
                     showWindow, useSnapshots, deleteAfterBuild, startupDelay, startupTimeout, commandLineOptions,
-                    targetAbi, deviceDefinition, executable, avdNameSuffix);
+                    screenshotDirectory, targetAbi, deviceDefinition, executable, avdNameSuffix);
             androidEmulator.setAdbTimeout(adbTimeout);
             return androidEmulator;
         }

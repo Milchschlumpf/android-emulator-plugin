@@ -11,7 +11,8 @@ import hudson.plugins.android_emulator.util.Utils;
 public final class SdkCliCommandFactory {
 
     // empty private constructor to avoid instantiation and sub-classing
-    private SdkCliCommandFactory() {}
+    private SdkCliCommandFactory() {
+    }
 
     /**
      * Retrieve the correct {@code AdbShellCommands} for the given API-Level of the
@@ -22,13 +23,14 @@ public final class SdkCliCommandFactory {
      * the correct {@code adb shell} commands for the given API-level
      */
     public static AdbShellCommands getAdbShellCommandForAPILevel(final int deviceAPILevel) {
-        if (deviceAPILevel < 4) {
-            return new AdbShellCommand00To03();
-        } else if (deviceAPILevel < 23) {
-            return new AdbShellCommand04To22();
-        } else {
-            return new AdbShellCommandsCurrentBase();
+        if (deviceAPILevel > 0) {
+            if (deviceAPILevel < 4) {
+                return new AdbShellCommand00To03();
+            } else if (deviceAPILevel < 23) {
+                return new AdbShellCommand04To22();
+            }
         }
+        return new AdbShellCommandsCurrentBase();
     }
 
     /**

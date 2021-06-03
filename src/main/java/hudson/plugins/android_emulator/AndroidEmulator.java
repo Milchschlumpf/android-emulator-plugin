@@ -275,6 +275,8 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
             }
         }
 
+        log(logger, "Found AndroidSDK, Version: " + androidSdk.getSdkToolsVersion());
+
         if (descriptor.shouldKeepInWorkspace) {
             SdkInstaller.optOutOfSdkStatistics(launcher, listener, androidSdkHome);
         }
@@ -409,9 +411,9 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
 
         // Wait for TCP socket to become available
         try {
-            int socket = waitForSocket(launcher, emu.userPort(), adbTimeout * 1000);
+            int socket = waitForSocket(launcher, emu.getEmulatorCallbackPort(), adbTimeout * 1000);
             if( socket < 0) {
-                throw new IOException("Could not get access to port: " + emu.userPort() );
+                throw new IOException("Could not get access to port: " + emu.getEmulatorCallbackPort() );
             }
             log(logger, Messages.EMULATOR_CONSOLE_REPORT(socket));
         } catch(Exception e) {
@@ -797,7 +799,7 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
         long start = System.currentTimeMillis();
         int sleep = timeout / (int) (Math.sqrt(timeout / 1000) * 2);
 
-        int apiLevel = 0;
+        int apiLevel = -1;
         if (!config.isNamedEmulator()) {
             apiLevel = config.getOsVersion().getSdkLevel();
         }

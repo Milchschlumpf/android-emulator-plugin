@@ -2,20 +2,9 @@ package hudson.plugins.android_emulator;
 
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import hudson.EnvVars;
-import hudson.Extension;
-import hudson.FilePath;
-import hudson.Functions;
-import hudson.Launcher;
-import hudson.Proc;
-import hudson.Util;
+import hudson.*;
 import hudson.matrix.Combination;
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.BuildListener;
-import hudson.model.Computer;
-import hudson.model.Node;
-import hudson.model.Result;
+import hudson.model.*;
 import hudson.plugins.android_emulator.sdk.AndroidSdk;
 import hudson.plugins.android_emulator.sdk.Tool;
 import hudson.plugins.android_emulator.sdk.cli.AdbShellCommands;
@@ -27,11 +16,13 @@ import hudson.remoting.Callable;
 import hudson.remoting.VirtualChannel;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
-import hudson.util.*;
+import hudson.util.ArgumentListBuilder;
+import hudson.util.ForkOutputStream;
+import hudson.util.FormValidation;
+import hudson.util.NullStream;
 import jenkins.model.ArtifactManager;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -42,15 +33,7 @@ import org.kohsuke.stapler.export.ExportedBean;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -425,14 +408,18 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
         // cope without this.
 
         // Wait for TCP socket to become available
-        int socket = waitForSocket(launcher, emu.getEmulatorCallbackPort(), adbTimeout * 1000);
-        if (socket < 0) {
-            log(logger, Messages.EMULATOR_DID_NOT_START());
+        try {
+            int socket = waitForSocket(launcher, emu.userPort(), adbTimeout * 1000);
+            if( socket < 0) {
+                throw new IOException("Could not get access to port: " + emu.userPort() );
+            }
+            log(logger, Messages.EMULATOR_CONSOLE_REPORT(socket));
+        } catch(Exception e) {
+            log(logger, Messages.EMULATOR_DID_NOT_START(), e);
             build.setResult(Result.NOT_BUILT);
             cleanUp(emuConfig, emu, androidSdk);
             return null;
         }
-        log(logger, Messages.EMULATOR_CONSOLE_REPORT(socket));
 
         // As of SDK Tools r12, "emulator" is no longer the main process; it just starts a certain
         // child process depending on the AVD architecture.  Therefore on Windows, checking the
@@ -788,17 +775,13 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
      * @param timeout How long to keep waiting (in milliseconds) before giving up.
      * @return The port number of the emulator's telnet interface, or {@code -1} in case of failure.
      */
-    private int waitForSocket(Launcher launcher, int port, int timeout) throws InterruptedException {
-        try {
-            ReceiveEmulatorPortTask task = new ReceiveEmulatorPortTask(port, timeout);
-            VirtualChannel channel = launcher.getChannel();
-            if (channel == null) {
-                throw new IllegalStateException("Channel is not configured");
-            }
-            return channel.call(task);
-        } catch (IOException ignore) {
+    private int waitForSocket(Launcher launcher, int port, int timeout) throws InterruptedException, IOException {
+        ReceiveEmulatorPortTask task = new ReceiveEmulatorPortTask(port, timeout);
+        VirtualChannel channel = launcher.getChannel();
+        if (channel == null) {
+            throw new IllegalStateException("Channel is not configured");
         }
-        return -1;
+        return channel.call(task);
     }
 
     /**
@@ -818,8 +801,10 @@ public class AndroidEmulator extends BuildWrapper implements Serializable {
         if (!config.isNamedEmulator()) {
             apiLevel = config.getOsVersion().getSdkLevel();
         }
+        log(emu.logger(), "Api Level found: " + apiLevel);
 
         final AdbShellCommands adbShellCmds = SdkCliCommandFactory.getAdbShellCommandForAPILevel(apiLevel);
+        //final AdbShellCommands adbShellCmds = new AdbShellCommandsCurrentBase();
         final SdkCliCommand adbDevicesStartCmd = adbShellCmds.getWaitForDeviceStartupCommand(emu.serial());
         final String expectedAnswer = adbShellCmds.getWaitForDeviceStartupExpectedAnswer();
         ArgumentListBuilder bootCheckCmd = emu.getToolCommand(adbDevicesStartCmd);

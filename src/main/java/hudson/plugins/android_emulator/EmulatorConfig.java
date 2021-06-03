@@ -1,5 +1,6 @@
 package hudson.plugins.android_emulator;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.FilePath;
 import hudson.Functions;
 import hudson.Launcher;
@@ -16,23 +17,14 @@ import hudson.plugins.android_emulator.util.StdoutReader;
 import hudson.plugins.android_emulator.util.Utils;
 import hudson.remoting.Callable;
 import hudson.util.ArgumentListBuilder;
+import jenkins.security.MasterToSlaveCallable;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
-import static hudson.plugins.android_emulator.AndroidEmulator.log;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import jenkins.security.MasterToSlaveCallable;
-
-import org.apache.commons.lang.exception.ExceptionUtils;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import static hudson.plugins.android_emulator.AndroidEmulator.log;
 
 class EmulatorConfig implements Serializable {
 
@@ -351,10 +343,11 @@ class EmulatorConfig implements Serializable {
         }
 
         // Tell the emulator to use certain ports
-        sb.append(String.format(" -ports %s,%s", userPort, adbPort));
+        //sb.append(String.format(" -ports %s,%s", userPort, adbPort));
+        sb.append(String.format(" -port %s", userPort));
 
         // Ask the emulator to report to us on the given port, once initial startup is complete
-        sb.append(String.format(" -report-console tcp:%s,max=%s", callbackPort, consoleTimeout));
+        sb.append(String.format(" -report-console tcp:%s,max=%s", userPort, consoleTimeout));
 
         // Set the locale to be used at startup
         if (!isNamedEmulator()) {
